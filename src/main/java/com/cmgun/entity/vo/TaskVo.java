@@ -1,4 +1,4 @@
-package com.cmgun.entity;
+package com.cmgun.entity.vo;
 
 import lombok.Data;
 import org.activiti.engine.task.Task;

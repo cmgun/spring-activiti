@@ -1,9 +1,8 @@
 package com.cmgun.service.impl;
 
-import com.cmgun.entity.TaskVo;
+import com.cmgun.entity.vo.TaskVo;
 import com.cmgun.service.BaseProcessService;
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.identity.Authentication;
@@ -13,7 +12,6 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,8 +28,6 @@ public class BaseProcessServiceImpl implements BaseProcessService {
 
     @Autowired
     private TaskService taskService;
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Override
     public ProcessInstance startProcess(Object data, String businessKey) {

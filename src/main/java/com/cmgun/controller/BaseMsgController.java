@@ -1,12 +1,10 @@
 package com.cmgun.controller;
 
-import com.cmgun.delegate.MsgPassDelegate;
 import com.cmgun.entity.BaseMsg;
-import com.cmgun.entity.TaskVo;
+import com.cmgun.entity.vo.TaskVo;
 import com.cmgun.service.BaseMsgService;
 import com.cmgun.service.BaseProcessService;
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
