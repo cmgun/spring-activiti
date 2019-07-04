@@ -22,7 +22,9 @@ public class BaseMsgService {
     private BaseMsgRepository baseMsgRepository;
 
     public void addMsg(BaseMsg baseMsg) {
-        BaseMsg result = baseMsgRepository.save(baseMsg);
+        baseMsgRepository.saveAndFlush(baseMsg);
+        // 查找bean
+        BaseMsg result = baseMsgRepository.findByMsg(baseMsg.getMsg());
         // msg内容作为唯一业务ID
         ProcessInstance processInstance = baseProcessService.startProcess(result, result.getMsg());
         log.info("processInstance:" + processInstance.getProcessDefinitionId());

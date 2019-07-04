@@ -18,4 +18,7 @@ public interface BaseMsgRepository extends JpaRepository<BaseMsg, Long> {
     @Query("update BaseMsg set state = :newState where id = :id and state = :oldState")
     void updateState(@Param("id")Integer id, @Param("newState")Integer newState
             , @Param("oldState")Integer oldState);
+
+    @Query("from BaseMsg where msg = :msg")
+    BaseMsg findByMsg(@Param("msg") String msg);
 }

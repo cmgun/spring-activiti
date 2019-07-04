@@ -1,5 +1,6 @@
 package com.cmgun.controller;
 
+import com.cmgun.delegate.MsgPassDelegate;
 import com.cmgun.entity.BaseMsg;
 import com.cmgun.entity.TaskVo;
 import com.cmgun.service.BaseMsgService;
@@ -38,6 +39,12 @@ public class BaseMsgController {
     @GetMapping("addPass")
     public String addPass(String groupName, String taskId, String comment) {
         baseProcessService.approveTask(taskId, groupName, "true", comment);
+        return "ok";
+    }
+
+    @GetMapping("addReject")
+    public String addReject(String groupName, String taskId, String comment) {
+        baseProcessService.approveTask(taskId, groupName, "false", comment);
         return "ok";
     }
 }

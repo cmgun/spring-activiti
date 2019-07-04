@@ -7,13 +7,13 @@ import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 /**
  * @author chenqilin
  * @Date 2019/7/3
  */
 @Slf4j
+@Component("msgPassDelegate")
 public class MsgPassDelegate implements JavaDelegate {
 
     @Autowired
@@ -26,6 +26,6 @@ public class MsgPassDelegate implements JavaDelegate {
         // 获取业务id
         BaseMsg baseMsg = (BaseMsg) execution.getVariable("data");
         // 更新状态
-        baseMsgRepository.updateState(baseMsg.getId(), 0, 1);
+        baseMsgRepository.updateState(baseMsg.getId(), 1, 0);
     }
 }

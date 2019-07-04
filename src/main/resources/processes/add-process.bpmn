@@ -12,7 +12,7 @@
     </sequenceFlow>
     <exclusiveGateway gatewayDirection="Unspecified" id="_11" name="审批结果"/>
     <sequenceFlow id="_12" sourceRef="_5" targetRef="_11"/>
-    <serviceTask activiti:class="com.cmgun.service.BaseMsgService" activiti:exclusive="true" id="_14" name="驳回事件"/>
+    <serviceTask activiti:delegateExpression="${msgRejectDelegate}" activiti:exclusive="true" id="_14" name="驳回事件"/>
     <sequenceFlow id="_15" name="拒绝" sourceRef="_7" targetRef="_14">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result == false}]]></conditionExpression>
     </sequenceFlow>
@@ -21,8 +21,10 @@
     </sequenceFlow>
     <endEvent id="_13" name="EndEvent"/>
     <sequenceFlow id="_16" sourceRef="_14" targetRef="_13"/>
-    <serviceTask activiti:exclusive="true" activiti:expression="${msgPassDelegate.execute(execution)}" id="_21" name="同意事件"/>
-    <sequenceFlow id="_23" sourceRef="_11" targetRef="_21"/>
+    <serviceTask activiti:delegateExpression="${msgPassDelegate}" activiti:exclusive="true" id="_21" name="同意事件"/>
+    <sequenceFlow id="_23" name="pass" sourceRef="_11" targetRef="_21">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result == true}]]></conditionExpression>
+    </sequenceFlow>
     <endEvent id="_24" name="EndEvent"/>
     <sequenceFlow id="_3" sourceRef="_21" targetRef="_24"/>
   </process>

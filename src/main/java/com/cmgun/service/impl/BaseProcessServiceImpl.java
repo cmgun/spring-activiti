@@ -13,6 +13,7 @@ import org.activiti.engine.task.Task;
 import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ public class BaseProcessServiceImpl implements BaseProcessService {
 
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Override
     public ProcessInstance startProcess(Object data, String businessKey) {
@@ -51,7 +54,6 @@ public class BaseProcessServiceImpl implements BaseProcessService {
         // 封装对象
         List<TaskVo> taskVos = new ArrayList<>();
         for (Task task : tasks) {
-            // 获取任务参数
             Map<String, Object> variables = taskService.getVariables(task.getId());
             taskVos.add(new TaskVo(task.getId(), variables));
         }
@@ -73,13 +75,15 @@ public class BaseProcessServiceImpl implements BaseProcessService {
             throw new RuntimeException("No Authentication to do this");
         }
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("result", approveResult);
         // 设置审批人名称，这里是组名
         Authentication.setAuthenticatedUserId(groupName);
-
         taskService.addComment(taskId, null, comments);
-//        taskService.setVariablesLocal(taskId, params);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("result", approveResult);
+//        params.put("applicationContext", applicationContext);
+        taskService.setVariablesLocal(taskId, params);
+
         taskService.complete(taskId, params);
     }
 }
