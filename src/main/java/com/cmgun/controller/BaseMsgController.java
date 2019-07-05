@@ -1,6 +1,7 @@
 package com.cmgun.controller;
 
 import com.cmgun.entity.BaseMsg;
+import com.cmgun.entity.vo.HistoryVo;
 import com.cmgun.entity.vo.TaskVo;
 import com.cmgun.service.BaseMsgService;
 import com.cmgun.service.BaseProcessService;
@@ -45,4 +46,10 @@ public class BaseMsgController {
         baseProcessService.approveTask(taskId, groupName, "false", comment);
         return "ok";
     }
+
+    @GetMapping("history")
+    public List<HistoryVo> queryAuditHistory(String groupName, String userId, String businessKey) {
+        return baseProcessService.queryHistory(groupName, userId, businessKey);
+    }
+
 }
