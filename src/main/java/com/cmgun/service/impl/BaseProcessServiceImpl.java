@@ -104,10 +104,12 @@ public class BaseProcessServiceImpl implements BaseProcessService {
                 .processInstanceBusinessKey(businessKey);
 //                .finished();
         // 组和Assignee不能同时查，否则会添加ASSIGNEE_ IS NULL
-//        if (StringUtils.isNotBlank(groupName)) {
-//            taskQuery = taskQuery.taskCandidateGroup(groupName);
-//        }
-        if (StringUtils.isNotBlank(userId)) {
+        if (StringUtils.isNotBlank(groupName)) {
+            List<String> list = new ArrayList<>();
+            list.add(groupName);
+//            taskQuery = taskQuery.taskInvolvedGroupsIn(list);
+            taskQuery = taskQuery.taskCandidateGroup(groupName);
+        } else if (StringUtils.isNotBlank(userId)) {
             taskQuery = taskQuery.taskAssignee(userId);
         }
         List<HistoricTaskInstance> taskInstances = taskQuery.list();
