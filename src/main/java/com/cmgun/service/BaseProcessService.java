@@ -14,5 +14,5 @@ public interface BaseProcessService {
 
     void approveTask(String taskId, String groupName, String approveResult, String comments);
 
-    List<HistoryVo> queryHistory(String groupName, String userId, String businessKey);
+    List<HistoryVo> queryHistory(String userId, String businessKey);
 }

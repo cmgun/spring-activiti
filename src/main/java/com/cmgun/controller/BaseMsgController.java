@@ -48,8 +48,8 @@ public class BaseMsgController {
     }
 
     @GetMapping("history")
-    public List<HistoryVo> queryAuditHistory(String groupName, String userId, String businessKey) {
-        return baseProcessService.queryHistory(groupName, userId, businessKey);
+    public List<HistoryVo> queryAuditHistory(String userId, String businessKey) {
+        return baseProcessService.queryHistory(userId, businessKey);
     }
 
 }

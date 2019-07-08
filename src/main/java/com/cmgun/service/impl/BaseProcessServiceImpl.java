@@ -97,19 +97,14 @@ public class BaseProcessServiceImpl implements BaseProcessService {
     }
 
     @Override
-    public List<HistoryVo> queryHistory(String groupName, String userId, String businessKey) {
+    public List<HistoryVo> queryHistory(String userId, String businessKey) {
         // 新建查询
         // 业务id必传
         HistoricTaskInstanceQuery taskQuery = historyService.createHistoricTaskInstanceQuery()
                 .processInstanceBusinessKey(businessKey);
 //                .finished();
         // 组和Assignee不能同时查，否则会添加ASSIGNEE_ IS NULL
-        if (StringUtils.isNotBlank(groupName)) {
-            List<String> list = new ArrayList<>();
-            list.add(groupName);
-//            taskQuery = taskQuery.taskInvolvedGroupsIn(list);
-            taskQuery = taskQuery.taskCandidateGroup(groupName);
-        } else if (StringUtils.isNotBlank(userId)) {
+        if (StringUtils.isNotBlank(userId)) {
             taskQuery = taskQuery.taskAssignee(userId);
         }
         List<HistoricTaskInstance> taskInstances = taskQuery.list();
