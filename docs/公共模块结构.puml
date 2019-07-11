@@ -1,0 +1,93 @@
+@startuml
+
+interface RuntimeService
+class ServiceImpl
+note left
+    获取流程引擎配置和流程执行指令
+end note
+class RuntimeServiceImpl
+
+RuntimeService <|-- RuntimeServiceImpl
+ServiceImpl <|- RuntimeServiceImpl
+
+RuntimeServiceImpl *-- ActProcessService : 使用
+class ActProcessService {
+    int startProcess(Object data, String businessKey)
+    void suspendProcessInstanceById(String processInstanceId)
+    void activateProcessInstanceById(String processInstanceId);
+}
+note left
+自定义增强功能，流程相关操作
+1. 流程开启，挂起，激活。
+end note
+
+
+interface TaskService
+class TaskServiceImpl
+TaskService <|-- TaskServiceImpl
+ServiceImpl <|- TaskServiceImpl
+
+TaskServiceImpl *-- ActTaskService : 使用
+class ActTaskService {
+    List<ToDoTask> queryToDoTaskByGroup(String groupName)
+    void executeTaskCommand(TaskContext context, TaskCommmand command)
+}
+note left
+自定义增强功能，任务相关操作
+1. 查询待办任务
+2. 任务审批
+end note
+
+class ToDoTask {
+    String taskId
+    Object variables
+}
+note left
+    待办任务
+end note
+
+class TaskContext {
+    private String taskId;
+    private String groupName;
+    private T approveResult;
+    private String comment;
+}
+note left
+    任务上下文
+end note
+
+interface TaskCommmand {
+    void execute()
+}
+note left
+    业务执行逻辑
+end note
+
+
+interface HistoryService
+class HistoryServiceImpl
+HistoryService <|-- HistoryServiceImpl
+ServiceImpl <|- HistoryServiceImpl
+HistoryServiceImpl *-- ActHistoryService : 使用
+class ActHistoryService {
+    List<ActHistory> queryHistoryByBusinessKey(String businessKey)
+    List<ActHistory> queryHistoryByUser(String userId, String businessKey)
+    List<ActHistory> queryHistoryByGroupName(String groupName, String businessKey)
+}
+note left
+自定义增强功能，历史记录相关操作
+end note
+
+class ActHistory {
+    String id;
+    Object data;
+    String auditId;
+    String comment;
+    String auditResult;
+    Date auditTime;
+}
+note left
+    历史审批任务
+end note
+
+@enduml

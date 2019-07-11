@@ -1,5 +1,7 @@
 package com.cmgun.service.impl;
 
+import com.cmgun.command.BaseTaskCommand;
+import com.cmgun.entity.TaskContext;
 import com.cmgun.entity.vo.HistoryVo;
 import com.cmgun.entity.vo.TaskVo;
 import com.cmgun.service.BaseProcessService;
@@ -38,6 +40,8 @@ public class BaseProcessServiceImpl implements BaseProcessService {
     private TaskService taskService;
     @Autowired
     private HistoryService historyService;
+    @Autowired
+    private BaseTaskCommand baseTaskCommand;
 
     @Override
     public ProcessInstance startProcess(Object data, String businessKey) {
@@ -86,6 +90,9 @@ public class BaseProcessServiceImpl implements BaseProcessService {
         Authentication.setAuthenticatedUserId(groupName + "user");
         taskService.addComment(taskId, null, comments);
 
+        // 业务逻辑处理
+        baseTaskCommand.execute(new TaskContext<>(taskId, groupName, approveResult, comments));
+
         Map<String, Object> params = new HashMap<>();
         params.put("result", approveResult);
 //        params.put("applicationContext", applicationContext);
@@ -94,6 +101,9 @@ public class BaseProcessServiceImpl implements BaseProcessService {
         taskService.claim(taskId, groupName + "user");
         // 任务审批
         taskService.complete(taskId, params);
+
+        // throw runtime exception
+//        throw new RuntimeException("mock exception");
     }
 
     @Override

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+
 /**
  * @author chenqilin
  * @Date 2019/7/2
@@ -21,4 +23,8 @@ public interface BaseMsgRepository extends JpaRepository<BaseMsg, Long> {
 
     @Query("from BaseMsg where msg = :msg")
     BaseMsg findByMsg(@Param("msg") String msg);
+
+    @Modifying
+    @Query("update BaseMsg set update_time = :updateTime where id = :id")
+    int updateTime(@Param("id")Integer id, @Param("updateTime")Date updateTime);
 }
