@@ -18,13 +18,13 @@ public interface BaseMsgRepository extends JpaRepository<BaseMsg, Long> {
 
     @Modifying
     @Query("update BaseMsg set state = :newState where id = :id and state = :oldState")
-    void updateState(@Param("id")Integer id, @Param("newState")Integer newState
-            , @Param("oldState")Integer oldState);
+    void updateState(@Param("id") Integer id, @Param("newState") Integer newState
+            , @Param("oldState") Integer oldState);
 
     @Query("from BaseMsg where msg = :msg")
     BaseMsg findByMsg(@Param("msg") String msg);
 
     @Modifying
     @Query("update BaseMsg set update_time = :updateTime where id = :id")
-    int updateTime(@Param("id")Integer id, @Param("updateTime")Date updateTime);
+    int updateTime(@Param("id") Integer id, @Param("updateTime") Date updateTime);
 }

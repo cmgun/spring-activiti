@@ -4,7 +4,6 @@ import com.cmgun.entity.BaseMsg;
 import com.cmgun.repository.BaseMsgRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

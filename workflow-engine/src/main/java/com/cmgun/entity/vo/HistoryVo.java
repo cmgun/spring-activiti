@@ -5,12 +5,10 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.task.Comment;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.springframework.util.Assert;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author chenqilin

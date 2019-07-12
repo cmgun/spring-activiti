@@ -1,7 +1,6 @@
 package com.cmgun.entity.vo;
 
 import lombok.Data;
-import org.activiti.engine.task.Task;
 
 import java.util.Map;
 
