@@ -7,12 +7,14 @@ import com.cmgun.entity.vo.TaskVo;
 import com.cmgun.service.BaseProcessService;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricTaskInstanceQuery;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.identity.Authentication;
+import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.IdentityLink;
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +44,15 @@ public class BaseProcessServiceImpl implements BaseProcessService {
     private HistoryService historyService;
     @Autowired
     private BaseTaskCommand baseTaskCommand;
+    @Autowired
+    private RepositoryService repositoryService;
+
+    public void deployProcess(String name, InputStream inputStream) {
+        Deployment deployment = repositoryService.createDeployment()
+                .name(name)
+                .addInputStream(name, inputStream)
+                .deploy();
+    }
 
     @Override
     public ProcessInstance startProcess(Object data, String businessKey) {

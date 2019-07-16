@@ -9,23 +9,18 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>workflow-engine</artifactId>
+    <artifactId>workflow-engine-api</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>cmgun</groupId>
-            <artifactId>workflow-engine-api</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.cloud</groupId>-->
-            <!--<artifactId>spring-cloud-starter-openfeign</artifactId>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
         </dependency>
+
     </dependencies>
 </project>
