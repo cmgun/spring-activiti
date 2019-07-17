@@ -1,9 +1,8 @@
 package com.cmgun.service.impl;
 
-import com.cmgun.command.BaseTaskCommand;
-import com.cmgun.entity.TaskContext;
-import com.cmgun.entity.vo.HistoryVo;
-import com.cmgun.entity.vo.TaskVo;
+//import com.cmgun.command.BaseTaskCommand;
+import com.cmgun.entity.vo.HistoryVO;
+import com.cmgun.entity.vo.TaskVO;
 import com.cmgun.service.BaseProcessService;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
@@ -25,7 +24,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,16 +43,21 @@ public class BaseProcessServiceImpl implements BaseProcessService {
     private TaskService taskService;
     @Autowired
     private HistoryService historyService;
-    @Autowired
-    private BaseTaskCommand baseTaskCommand;
+//    @Autowired
+//    private BaseTaskCommand baseTaskCommand;
     @Autowired
     private RepositoryService repositoryService;
 
-    public void deployProcess(String name, InputStream inputStream) {
+    @Override
+    public Deployment deployProcess(String progressName, String key, MultipartFile multipartFile) throws IOException {
+        log.info("准备部署流程, name:{}, key:{}", progressName, key);
         Deployment deployment = repositoryService.createDeployment()
-                .name(name)
-                .addInputStream(name, inputStream)
+                .name(progressName)
+                .key(key)
+                .addInputStream(multipartFile.getOriginalFilename(), multipartFile.getInputStream())
                 .deploy();
+        log.info("部署流程结束, name:{}, key:{}, id:{}", progressName, key, deployment != null ? deployment.getId() : "");
+        return deployment;
     }
 
     @Override
@@ -65,7 +71,7 @@ public class BaseProcessServiceImpl implements BaseProcessService {
     }
 
     @Override
-    public List<TaskVo> queryGroupToDoTasks(String groupName) {
+    public List<TaskVO> queryGroupToDoTasks(String groupName) {
         TaskQuery taskQuery = taskService.createTaskQuery();
         taskQuery.taskCandidateGroup(groupName);
         List<Task> tasks = taskQuery.list();
@@ -73,12 +79,12 @@ public class BaseProcessServiceImpl implements BaseProcessService {
             return new ArrayList<>();
         }
         // 封装对象
-        List<TaskVo> taskVos = new ArrayList<>();
+        List<TaskVO> taskVOs = new ArrayList<>();
         for (Task task : tasks) {
             Map<String, Object> variables = taskService.getVariables(task.getId());
-            taskVos.add(new TaskVo(task.getId(), variables));
+            taskVOs.add(new TaskVO(task.getId(), variables));
         }
-        return taskVos;
+        return taskVOs;
     }
 
     @Transactional
@@ -102,7 +108,7 @@ public class BaseProcessServiceImpl implements BaseProcessService {
         taskService.addComment(taskId, null, comments);
 
         // 业务逻辑处理
-        baseTaskCommand.execute(new TaskContext<>(taskId, groupName, approveResult, comments));
+//        baseTaskCommand.execute(new TaskContext<>(taskId, groupName, approveResult, comments));
 
         Map<String, Object> params = new HashMap<>();
         params.put("result", approveResult);
@@ -118,7 +124,7 @@ public class BaseProcessServiceImpl implements BaseProcessService {
     }
 
     @Override
-    public List<HistoryVo> queryHistory(String userId, String businessKey) {
+    public List<HistoryVO> queryHistory(String userId, String businessKey) {
         // 新建查询
         // 业务id必传
         HistoricTaskInstanceQuery taskQuery = historyService.createHistoricTaskInstanceQuery()
@@ -132,7 +138,7 @@ public class BaseProcessServiceImpl implements BaseProcessService {
         if (CollectionUtils.isEmpty(taskInstances)) {
             return new ArrayList<>();
         }
-        List<HistoryVo> historyVoList = new ArrayList<>();
+        List<HistoryVO> historyVOList = new ArrayList<>();
         // 填充列表
         for (HistoricTaskInstance taskInstance : taskInstances) {
             // 审批备注，目前只有单人审批，记录只有一条
@@ -146,9 +152,9 @@ public class BaseProcessServiceImpl implements BaseProcessService {
             List<HistoricVariableInstance> taskLocalVariables = historyService.createHistoricVariableInstanceQuery()
                     .taskId(taskInstance.getId())
                     .list();
-            HistoryVo historyVo = new HistoryVo(taskInstance, comments, variables, taskLocalVariables);
-            historyVoList.add(historyVo);
+            HistoryVO historyVo = new HistoryVO(taskInstance, comments, variables, taskLocalVariables);
+            historyVOList.add(historyVo);
         }
-        return historyVoList;
+        return historyVOList;
     }
 }

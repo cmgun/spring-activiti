@@ -15,7 +15,7 @@ import java.util.List;
  * @Date 2019/7/5
  */
 @Data
-public class HistoryVo {
+public class HistoryVO {
 
     /**
      * task id
@@ -35,7 +35,7 @@ public class HistoryVo {
 
     private Date auditTime;
 
-    public HistoryVo(HistoricTaskInstance taskInstance, List<Comment> comments
+    public HistoryVO(HistoricTaskInstance taskInstance, List<Comment> comments
             , List<HistoricVariableInstance> processVariables, List<HistoricVariableInstance> localVariables) {
         Assert.notNull(taskInstance, "HistoricTaskInstance is null");
         // 审批人

@@ -10,11 +10,11 @@ class RuntimeServiceImpl
 RuntimeService <|-- RuntimeServiceImpl
 ServiceImpl <|- RuntimeServiceImpl
 
-RuntimeServiceImpl *-- ActProcessServiceImpl : 使用
-class ActProcessServiceImpl {
+RuntimeServiceImpl *-- ActProcessController : 使用
+class ActProcessController {
 }
 
-ActProcessService <|-- ActProcessServiceImpl
+ActProcessService <|-- ActProcessController
 interface ActProcessService {
     int startProcess(Object data, String businessKey)
     void suspendProcessInstanceById(String processInstanceId)
@@ -31,11 +31,11 @@ class TaskServiceImpl
 TaskService <|-- TaskServiceImpl
 ServiceImpl <|- TaskServiceImpl
 
-TaskServiceImpl *-- ActTaskServiceImpl : 使用
-class ActTaskServiceImpl {
+TaskServiceImpl *-- ActTaskController : 使用
+class ActTaskController {
 }
 
-ActTaskService <|- ActTaskServiceImpl
+ActTaskService <|- ActTaskController
 interface ActTaskService {
     List<ToDoTask> queryToDoTaskByGroup(String groupName)
     void executeTaskCommand(TaskContext context, TaskCommmand command)
@@ -47,7 +47,7 @@ note bottom
     2. 任务审批
 end note
 
-ActTaskServiceImpl --* TaskContext : 使用
+ActTaskController --* TaskContext : 使用
 class TaskContext {
     private String taskId;
     private String groupName;
@@ -70,11 +70,11 @@ interface HistoryService
 class HistoryServiceImpl
 HistoryService <|-- HistoryServiceImpl
 ServiceImpl <|- HistoryServiceImpl
-HistoryServiceImpl *-- ActHistoryServiceImpl : 使用
-class ActHistoryServiceImpl {
+HistoryServiceImpl *-- ActHistoryController : 使用
+class ActHistoryController {
 }
 
-ActHistoryService <|-- ActHistoryServiceImpl
+ActHistoryService <|-- ActHistoryController
 interface ActHistoryService {
     List<ActHistory> queryHistoryByBusinessKey(String businessKey)
     List<ActHistory> queryHistoryByUser(String userId, String businessKey)

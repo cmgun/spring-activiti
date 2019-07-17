@@ -21,6 +21,8 @@ public class Response {
 
     public static final Long ERROR = 500L;
 
+    public static final Long BUSINESS_ERROR = 9999L;
+
     /**
      * 响应码
      */
@@ -35,4 +37,32 @@ public class Response {
      * 业务数据
      */
     private Object payload;
+
+    /**
+     * 成功
+     *
+     * @param message 信息
+     * @param payload 业务数据
+     * @return 响应体
+     */
+    public static Response success(String message, Object payload) {
+        return Response.builder()
+                .code(OK)
+                .message(message)
+                .payload(payload)
+                .build();
+    }
+
+    /**
+     * 业务异常
+     *
+     * @param message 异常信息
+     * @return 响应体
+     */
+    public static Response businessError(String message) {
+        return Response.builder()
+                .code(BUSINESS_ERROR)
+                .message(message)
+                .build();
+    }
 }

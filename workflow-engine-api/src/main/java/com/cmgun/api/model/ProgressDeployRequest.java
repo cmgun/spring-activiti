@@ -13,6 +13,7 @@ import java.io.InputStream;
  * @author chenqilin
  * @Date 2019/7/16
  */
+@Deprecated
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class ProgressDeployRequest extends Request {
@@ -23,6 +24,6 @@ public class ProgressDeployRequest extends Request {
     @ApiModelProperty("流程key，流程的唯一标识")
     private String key;
 
-    @ApiModelProperty("流程图文件流")
-    private InputStream progressFileStream;
+//    @ApiModelProperty("流程图文件流")
+//    private InputStream progressFileStream;
 }
