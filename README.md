@@ -1,5 +1,5 @@
 # spring-activiti
-Activiti6 + Spring Boot 2 integration.
+Activiti6 + Spring Boot 2 + Spring Cloud Greenwich integration.
 
 ---
 ### Design Target
