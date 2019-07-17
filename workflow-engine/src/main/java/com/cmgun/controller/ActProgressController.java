@@ -5,6 +5,7 @@ import com.cmgun.api.service.ActProgressService;
 import com.cmgun.entity.vo.ProcessVO;
 import com.cmgun.service.BaseProcessService;
 
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.repository.Deployment;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +24,7 @@ import java.io.IOException;
  * @author chenqilin
  * @Date 2019/7/16
  */
+@Api
 @Slf4j
 @RestController
 @RequestMapping("progress")
