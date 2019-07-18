@@ -1,9 +1,6 @@
 @startuml
 == 1、流程部署 start ==
-客户端 -> 客户端 : 启动时自动部署
-note left
-    一期只实现自动部署处理，避免复杂交互
-end note
-客户端 -> ActProgressService : HTTP-deploy
+客户端 -> 契约api : 部署请求
+契约api -> ActProgressService : HTTP-deploy
 == 1、流程部署 end ==
 @enduml

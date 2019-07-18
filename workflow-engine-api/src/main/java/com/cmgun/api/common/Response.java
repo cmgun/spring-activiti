@@ -13,15 +13,35 @@ import lombok.Data;
 @Builder
 public class Response {
 
+    /**
+     * 成功
+     */
     public static final Long OK = 200L;
 
+    /**
+     * 请求参数不合法
+     */
     public static final Long BAD_REQUEST = 400L;
 
+    /**
+     * 无权限
+     */
     public static final Long UNAUTHORIZED = 401L;
 
+    /**
+     * 重复请求
+     */
+    public static final Long REPEAT_REQUEST = 402L;
+
+    /**
+     * 系统异常
+     */
     public static final Long ERROR = 500L;
 
-    public static final Long BUSINESS_ERROR = 9999L;
+    /**
+     * 业务异常
+     */
+    public static final Long BUSINESS_ERROR = 600L;
 
     /**
      * 响应码

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 
 /**
  * 通用请求体
@@ -12,7 +13,7 @@ import javax.validation.constraints.NotBlank;
  * @Date 2019/7/16
  */
 @Data
-public class Request {
+public class Request implements Serializable {
 
     @NotBlank(message = "请求流水号不能为空")
     @ApiModelProperty("请求流水号")

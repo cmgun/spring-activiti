@@ -1,7 +1,9 @@
 package com.cmgun.controller;
 
 import com.cmgun.api.common.Response;
+import com.cmgun.api.model.ProgressStartRequest;
 import com.cmgun.api.service.ActProgressService;
+import com.cmgun.config.security.DuplicateResource;
 import com.cmgun.entity.vo.ProcessVO;
 import com.cmgun.service.BaseProcessService;
 
@@ -33,6 +35,7 @@ public class ActProgressController implements ActProgressService {
     @Autowired
     private BaseProcessService baseProcessService;
 
+//    @DuplicateResource
     @Override
     public Response deploy(String progressName, String key, MultipartFile file) throws IOException {
         // 必要校验
@@ -50,8 +53,10 @@ public class ActProgressController implements ActProgressService {
         return Response.success("部署成功", new ProcessVO(deployment));
     }
 
+    @DuplicateResource
     @Override
-    public Response start() {
+    public Response start(ProgressStartRequest request) {
+        log.info("progress start");
         return null;
     }
 

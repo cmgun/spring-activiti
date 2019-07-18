@@ -1,6 +1,7 @@
 package com.cmgun.controller.handler;
 
 import com.cmgun.api.common.Response;
+import com.cmgun.config.security.exception.DuplicateRequestException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,6 +22,16 @@ public class ErrorHandlerController {
     public Response IllegalArgumentExceptionHandler(HttpServletRequest request, IllegalArgumentException exception) {
         return Response.builder()
                 .code(Response.BAD_REQUEST)
+                .message(exception.getMessage())
+                .build();
+
+    }
+
+    @ExceptionHandler(DuplicateRequestException.class)
+    @ResponseBody
+    public Response DuplicateRequestExceptionHandler(HttpServletRequest request, DuplicateRequestException exception) {
+        return Response.builder()
+                .code(Response.REPEAT_REQUEST)
                 .message(exception.getMessage())
                 .build();
 
