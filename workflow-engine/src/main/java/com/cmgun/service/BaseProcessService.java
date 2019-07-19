@@ -18,12 +18,12 @@ public interface BaseProcessService {
     /**
      * 部署流程
      *
-     * @param progressName 流程文件名称，bpmn或bpmn20.xml结尾
+     * @param processName 流程文件名称，bpmn或bpmn20.xml结尾
      * @param key 流程key
      * @param multipartFile 流程文件
      * @return 部署信息
      */
-    Deployment deployProcess(String progressName, String key, MultipartFile multipartFile) throws IOException;
+    Deployment deployProcess(String processName, String key, MultipartFile multipartFile) throws IOException;
 
     ProcessInstance startProcess(Object data, String businessKey);
 

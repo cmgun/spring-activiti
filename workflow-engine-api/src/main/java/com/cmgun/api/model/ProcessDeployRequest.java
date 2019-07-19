@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.InputStream;
+import javax.validation.constraints.NotBlank;
 
 /**
  * 流程发布请求
@@ -13,17 +13,17 @@ import java.io.InputStream;
  * @author chenqilin
  * @Date 2019/7/16
  */
-@Deprecated
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ProgressDeployRequest extends Request {
+public class ProcessDeployRequest extends Request {
 
+    private static final long serialVersionUID = -1873951875518899989L;
+
+    @NotBlank(message = "流程名称不能为空")
     @ApiModelProperty("流程名称")
-    private String progressName;
+    private String processName;
 
+    @NotBlank(message = "流程key不能为空")
     @ApiModelProperty("流程key，流程的唯一标识")
     private String key;
-
-//    @ApiModelProperty("流程图文件流")
-//    private InputStream progressFileStream;
 }

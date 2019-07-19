@@ -1,7 +1,8 @@
 package com.cmgun.api.service;
 
 import com.cmgun.api.common.Response;
-import com.cmgun.api.model.ProgressStartRequest;
+import com.cmgun.api.model.ProcessDeployRequest;
+import com.cmgun.api.model.ProcessStartRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -21,18 +22,20 @@ import java.io.IOException;
  * @author chenqilin
  * @Date 2019/7/16
  */
-@FeignClient(value = "workflow-server", path = "progress")
-public interface ActProgressService {
+@FeignClient(value = "workflow-server", path = "process")
+public interface ActProcessService {
 
     @ApiOperation("流程发布")
     @PostMapping(value = "deploy", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    Response deploy(@ApiParam(value = "流程名称") @RequestParam(value = "progressName") String progressName
+    Response deploy(
+            @ApiParam(value = "流程名称") @RequestParam(value = "processName") String processName
             , @ApiParam(value = "流程key") @RequestParam(value = "key") String key
-            , @ApiParam(value = "流程文件")  @RequestPart(value = "file") MultipartFile file) throws IOException;
+//            @ApiParam(value = "流程key") @RequestBody @Validated ProcessDeployRequest request
+            , @ApiParam(value = "流程文件") @RequestPart("file") MultipartFile file) throws IOException;
 
     @ApiOperation("流程开启")
     @PostMapping("start")
-    Response start(@RequestBody @Validated ProgressStartRequest request);
+    Response start(@RequestBody @Validated ProcessStartRequest request);
 
     @ApiOperation("流程挂起")
     @PostMapping("suspend")

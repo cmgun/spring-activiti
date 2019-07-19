@@ -1,6 +1,7 @@
 package com.cmgun.api.common;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -17,9 +18,9 @@ public class Request implements Serializable {
 
     @NotBlank(message = "请求流水号不能为空")
     @ApiModelProperty("请求流水号")
-    private String requestNo;
+    protected String requestNo;
 
     @NotBlank(message = "请求来源")
     @ApiModelProperty("请求来源")
-    private String source;
+    protected String source;
 }

@@ -49,14 +49,14 @@ public class BaseProcessServiceImpl implements BaseProcessService {
     private RepositoryService repositoryService;
 
     @Override
-    public Deployment deployProcess(String progressName, String key, MultipartFile multipartFile) throws IOException {
-        log.info("准备部署流程, name:{}, key:{}", progressName, key);
+    public Deployment deployProcess(String processName, String key, MultipartFile multipartFile) throws IOException {
+        log.info("准备部署流程, name:{}, key:{}", processName, key);
         Deployment deployment = repositoryService.createDeployment()
-                .name(progressName)
+                .name(processName)
                 .key(key)
                 .addInputStream(multipartFile.getOriginalFilename(), multipartFile.getInputStream())
                 .deploy();
-        log.info("部署流程结束, name:{}, key:{}, id:{}", progressName, key, deployment != null ? deployment.getId() : "");
+        log.info("部署流程结束, name:{}, key:{}, id:{}", processName, key, deployment != null ? deployment.getId() : "");
         return deployment;
     }
 

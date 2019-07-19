@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Builder
-public class ProgressStartRequest extends Request {
+public class ProcessStartRequest extends Request {
     private static final long serialVersionUID = -1992424046597943733L;
 
     @NotNull(message = "流程定义key不能为空")

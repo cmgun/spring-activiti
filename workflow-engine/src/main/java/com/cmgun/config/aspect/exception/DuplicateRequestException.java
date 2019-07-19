@@ -1,4 +1,4 @@
-package com.cmgun.config.security.exception;
+package com.cmgun.config.aspect.exception;
 
 /**
  * 重复请求异常
