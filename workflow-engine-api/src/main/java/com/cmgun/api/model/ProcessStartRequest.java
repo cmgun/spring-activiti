@@ -2,7 +2,6 @@ package com.cmgun.api.model;
 
 import com.cmgun.api.common.Request;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,8 +15,8 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Builder
 public class ProcessStartRequest extends Request {
+
     private static final long serialVersionUID = -1992424046597943733L;
 
     @NotNull(message = "流程定义key不能为空")
@@ -28,7 +27,6 @@ public class ProcessStartRequest extends Request {
     @ApiModelProperty("流程的业务id，命名规则：业务模块标志:业务id")
     private String businessKey;
 
-    @NotNull(message = "业务数据不能为空")
-    @ApiModelProperty("业务数据")
+    @ApiModelProperty("流程上下文，包含必要的业务数据")
     private Object payload;
 }

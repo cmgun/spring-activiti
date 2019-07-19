@@ -2,6 +2,7 @@ package com.cmgun.controller.handler;
 
 import com.cmgun.api.common.Response;
 import com.cmgun.config.aspect.exception.DuplicateRequestException;
+import com.cmgun.exception.ActBusinessException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -74,7 +75,23 @@ public class ErrorHandlerController {
     }
 
     /**
-     * 不合法参数异常
+     * 业务异常
+     *
+     * @param request 请求
+     * @param exception 异常
+     * @return 响应
+     */
+    @ExceptionHandler(ActBusinessException.class)
+    @ResponseBody
+    public Response ActBusinessExceptionHandler(HttpServletRequest request, ActBusinessException exception) {
+        return Response.builder()
+                .code(Response.BUSINESS_ERROR)
+                .message(exception.getMessage())
+                .build();
+    }
+
+    /**
+     * 其他异常
      *
      * @param request 请求
      * @param exception 异常

@@ -33,7 +33,7 @@ public class LogAspect {
      * @param joinPoint
      */
     @Around("pointcut()")
-    public void around(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         // 类名
         String clazzName = joinPoint.getTarget().getClass().getName();
         // 方法名
@@ -41,9 +41,10 @@ public class LogAspect {
         // 参数
         String args = Arrays.toString(joinPoint.getArgs());
         log.info("开始处理请求, Class:{}, method:{}, args:{}", clazzName, methodName, args);
+        Object result;
         long startTime = System.currentTimeMillis();
         try {
-            joinPoint.proceed();
+            result = joinPoint.proceed();
         } catch (Throwable e) {
             log.warn("请求执行异常, Class:{}, method:{}, args:{}", clazzName, methodName, args, e);
             throw e;
@@ -51,5 +52,6 @@ public class LogAspect {
             log.info("请求结束, Class:{}, method:{}, args:{}, time:{}"
                     , clazzName, methodName, args, System.currentTimeMillis() - startTime);
         }
+        return result;
     }
 }

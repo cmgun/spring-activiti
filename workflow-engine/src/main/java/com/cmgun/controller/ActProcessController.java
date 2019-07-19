@@ -10,6 +10,7 @@ import com.cmgun.service.BaseProcessService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,27 +35,26 @@ public class ActProcessController implements ActProcessService {
     private BaseProcessService baseProcessService;
 
     @Override
-    public Response deploy(String processName, String key, MultipartFile file) throws IOException {
+    public Response deploy(String processName, String key, String source,MultipartFile file) throws IOException {
         // 必要校验
         Assert.notNull(processName,"process不能为空");
         Assert.notNull(key,"key不能为空");
+        Assert.notNull(source,"source不能为空");
         // 文件是否合法
         String fileName = file.getOriginalFilename();
         Assert.notNull(fileName, "流程文件名不能为空");
         Assert.isTrue(fileName.endsWith("bpmn") || fileName.endsWith("bpmn20.xml")
                 , "非bpmn流程文件");
-        Deployment deployment = baseProcessService.deployProcess(processName, key, file);
-        if (deployment == null) {
-            return Response.businessError("部署失败");
-        }
-        return Response.success("部署成功", new ProcessVO(deployment));
+        ProcessVO processVO = baseProcessService.deployProcess(processName, source.concat(key), file);
+        return Response.success("部署成功", processVO);
     }
 
     @DuplicateResource
     @Override
     public Response start(ProcessStartRequest request) {
-        log.info("process start");
-        return null;
+        ProcessVO processVO = baseProcessService.startProcess(request.getProcessDefinitionKey()
+                , request.getBusinessKey(), request.getPayload());
+        return Response.success("流程启动成功", processVO);
     }
 
     @Override

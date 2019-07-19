@@ -41,7 +41,7 @@ public class Response {
     /**
      * 业务异常
      */
-    public static final Long BUSINESS_ERROR = 600L;
+    public static final Long BUSINESS_ERROR = 900L;
 
     /**
      * 响应码

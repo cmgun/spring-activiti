@@ -1,9 +1,12 @@
 package com.cmgun.service.impl;
 
 //import com.cmgun.command.BaseTaskCommand;
+
 import com.cmgun.entity.vo.HistoryVO;
+import com.cmgun.entity.vo.ProcessVO;
 import com.cmgun.entity.vo.TaskVO;
 import com.cmgun.service.BaseProcessService;
+import com.cmgun.utils.ExceptionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
@@ -14,6 +17,7 @@ import org.activiti.engine.history.HistoricTaskInstanceQuery;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.IdentityLink;
@@ -27,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,25 +52,35 @@ public class BaseProcessServiceImpl implements BaseProcessService {
     private RepositoryService repositoryService;
 
     @Override
-    public Deployment deployProcess(String processName, String key, MultipartFile multipartFile) throws IOException {
+    @Transactional(rollbackFor = Exception.class)
+    public ProcessVO deployProcess(String processName, String key, MultipartFile multipartFile) throws IOException {
         log.info("准备部署流程, name:{}, key:{}", processName, key);
         Deployment deployment = repositoryService.createDeployment()
                 .name(processName)
                 .key(key)
                 .addInputStream(multipartFile.getOriginalFilename(), multipartFile.getInputStream())
                 .deploy();
-        log.info("部署流程结束, name:{}, key:{}, id:{}", processName, key, deployment != null ? deployment.getId() : "");
-        return deployment;
+        ExceptionUtil.businessException(deployment == null, "部署失败");
+        log.info("部署流程结束, name:{}, key:{}, id:{}", processName, key, deployment.getId());
+        // 查询对应流程定义
+        List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery()
+                .deploymentId(deployment.getId())
+                .list();
+        ExceptionUtil.businessException(CollectionUtils.isEmpty(processDefinitions), "部署失败，流程定义不存在");
+        return new ProcessVO(deployment, processDefinitions.get(0));
     }
 
     @Override
-    public ProcessInstance startProcess(Object data, String businessKey) {
+    @Transactional(rollbackFor = Exception.class)
+    public ProcessVO startProcess(String processDefinitionKey, String businessKey, Object processData) {
         Map<String, Object> variables = new HashMap<>();
-        variables.put("data", data);
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("add-process", businessKey, variables);
-//        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("add-process", businessKey);
-        log.debug(String.format("id:%s,activitiId:%s", processInstance.getId(), processInstance.getActivityId()));
-        return processInstance;
+        variables.put("data", processData);
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey, businessKey, variables);
+        ExceptionUtil.businessException(processInstance == null, "启动流程失败");
+        log.info("开启流程, processId:{}, defKey:{}, businessKey:{}", processInstance.getId()
+                , processInstance.getProcessDefinitionKey()
+                , processInstance.getBusinessKey());
+        return new ProcessVO(processInstance);
     }
 
     @Override

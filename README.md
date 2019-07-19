@@ -36,3 +36,8 @@ Activiti6 + Spring Boot 2 + Spring Cloud Greenwich integration.
 - 根据用户组查询历史审批任务
 - 根据用户查询历史审批任务
 
+---
+### 引擎基础设施
+- 请求日志记录
+- 请求流水号防重（Redis）
+

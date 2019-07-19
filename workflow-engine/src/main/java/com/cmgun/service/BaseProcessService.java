@@ -1,6 +1,8 @@
 package com.cmgun.service;
 
+import com.cmgun.api.common.TaskContext;
 import com.cmgun.entity.vo.HistoryVO;
+import com.cmgun.entity.vo.ProcessVO;
 import com.cmgun.entity.vo.TaskVO;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -21,11 +23,19 @@ public interface BaseProcessService {
      * @param processName 流程文件名称，bpmn或bpmn20.xml结尾
      * @param key 流程key
      * @param multipartFile 流程文件
-     * @return 部署信息
+     * @return 成功部署对应的流程定义
      */
-    Deployment deployProcess(String processName, String key, MultipartFile multipartFile) throws IOException;
+    ProcessVO deployProcess(String processName, String key, MultipartFile multipartFile) throws IOException;
 
-    ProcessInstance startProcess(Object data, String businessKey);
+    /**
+     * 开启流程
+     *
+     * @param processDefinitionKey 流程定义key
+     * @param businessKey 业务key
+     * @param processData 流程数据，贯穿整个流程生命周期
+     * @return 流程实例
+     */
+    ProcessVO startProcess(String processDefinitionKey, String businessKey, Object processData);
 
     List<TaskVO> queryGroupToDoTasks(String groupName);
 
