@@ -1,6 +1,7 @@
 package com.cmgun.api.model;
 
 import com.cmgun.api.common.Request;
+import com.cmgun.api.common.TaskContext;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,6 +28,7 @@ public class ProcessStartRequest extends Request {
     @ApiModelProperty("流程的业务id，命名规则：业务模块标志:业务id")
     private String businessKey;
 
+    @NotNull(message = "流程上下文不能为空")
     @ApiModelProperty("流程上下文，包含必要的业务数据")
-    private Object payload;
+    private TaskContext taskContext;
 }

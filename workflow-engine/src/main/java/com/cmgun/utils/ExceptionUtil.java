@@ -13,7 +13,7 @@ public class ExceptionUtil {
     /**
      * 业务异常
      *
-     * @param condition 条件
+     * @param condition 条件，满足时抛指定异常
      * @param errMsg 异常信息
      */
     public static void businessException(boolean condition, String errMsg) {

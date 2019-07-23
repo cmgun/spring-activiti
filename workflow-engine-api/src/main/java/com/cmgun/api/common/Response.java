@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class Response {
+public class Response<T> {
 
     /**
      * 成功
@@ -56,17 +56,16 @@ public class Response {
     /**
      * 业务数据
      */
-    private Object payload;
+    private T payload;
 
     /**
      * 成功
      *
      * @param message 信息
-     * @param payload 业务数据
      * @return 响应体
      */
-    public static Response success(String message, Object payload) {
-        return Response.builder()
+    public static <T> Response<T> success(String message, T payload) {
+        return Response.<T>builder()
                 .code(OK)
                 .message(message)
                 .payload(payload)

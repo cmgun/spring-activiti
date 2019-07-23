@@ -2,7 +2,9 @@ package com.cmgun.consumer.controller;
 
 import com.cmgun.api.common.Response;
 import com.cmgun.api.model.ProcessStartRequest;
+import com.cmgun.api.model.ToDoTaskRequest;
 import com.cmgun.api.service.ActProcessService;
+import com.cmgun.api.service.ActTaskService;
 import com.cmgun.consumer.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -22,9 +24,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class ConsumerController {
 
     @Autowired
+    private ApplicationContext applicationContext;
+    @Autowired
     private ActProcessService actProcessNameService;
     @Autowired
-    private ApplicationContext applicationContext;
+    private ActTaskService actTaskService;
+
 
     @PostMapping("deploy")
     public Response deploy(String fileName, String processName) throws Exception {
@@ -34,7 +39,7 @@ public class ConsumerController {
         }
         // 文件存在，生成multipartFile
         MultipartFile multipartFile = FileUtils.createMultipartFile("file", resource);
-        Response response = actProcessNameService.deploy(processName, processName + "-key", "1", multipartFile);
+        Response response = actProcessNameService.deploy(processName, processName + "-key", "1", "TestCategory", multipartFile);
         return response;
     }
 
@@ -44,4 +49,9 @@ public class ConsumerController {
         return response;
     }
 
+    @PostMapping("todoList")
+    public Response todoList(@RequestBody ToDoTaskRequest request) {
+        Response response = actTaskService.todoList(request);
+        return response;
+    }
 }

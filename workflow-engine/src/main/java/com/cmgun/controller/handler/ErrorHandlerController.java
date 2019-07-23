@@ -3,6 +3,7 @@ package com.cmgun.controller.handler;
 import com.cmgun.api.common.Response;
 import com.cmgun.config.aspect.exception.DuplicateRequestException;
 import com.cmgun.exception.ActBusinessException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author chenqilin
  * @Date 2019/7/17
  */
+@Slf4j
 @ControllerAdvice
 public class ErrorHandlerController {
 
@@ -30,6 +32,7 @@ public class ErrorHandlerController {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseBody
     public Response IllegalArgumentExceptionHandler(HttpServletRequest request, IllegalArgumentException exception) {
+        log.warn("IllegalArgumentExceptionHandler，url:{}", request.getRequestURI(), exception);
         return Response.builder()
                 .code(Response.BAD_REQUEST)
                 .message(exception.getMessage())
@@ -47,6 +50,7 @@ public class ErrorHandlerController {
     @ExceptionHandler(DuplicateRequestException.class)
     @ResponseBody
     public Response DuplicateRequestExceptionHandler(HttpServletRequest request, DuplicateRequestException exception) {
+        log.warn("DuplicateRequestExceptionHandler，url:{}", request.getRequestURI(), exception);
         return Response.builder()
                 .code(Response.REPEAT_REQUEST)
                 .message(exception.getMessage())
@@ -67,6 +71,8 @@ public class ErrorHandlerController {
         for (FieldError fieldError : exception.getBindingResult().getFieldErrors()) {
             errMsg.append(fieldError.getDefaultMessage()).append(";");
         }
+        log.warn("MethodArgumentNotValidExceptionHandler，url:{}，errMsg:{}", request.getRequestURI()
+                , errMsg.toString(), exception);
         return Response.builder()
                 .code(Response.BAD_REQUEST)
                 .message(errMsg.toString())
@@ -84,6 +90,7 @@ public class ErrorHandlerController {
     @ExceptionHandler(ActBusinessException.class)
     @ResponseBody
     public Response ActBusinessExceptionHandler(HttpServletRequest request, ActBusinessException exception) {
+        log.warn("ActBusinessExceptionHandler，url:{}", request.getRequestURI(), exception);
         return Response.builder()
                 .code(Response.BUSINESS_ERROR)
                 .message(exception.getMessage())
@@ -100,9 +107,10 @@ public class ErrorHandlerController {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public Response ExceptionHandler(HttpServletRequest request, Exception exception) {
+        log.warn("ExceptionHandler，url:{}", request.getRequestURI(), exception);
         return Response.builder()
                 .code(Response.ERROR)
-                .message(exception.getMessage())
+                .message("系统内部异常")
                 .build();
     }
 }

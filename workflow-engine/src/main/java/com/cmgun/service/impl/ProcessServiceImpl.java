@@ -2,10 +2,16 @@ package com.cmgun.service.impl;
 
 //import com.cmgun.command.BaseTaskCommand;
 
+import com.cmgun.api.common.TaskContext;
+import com.cmgun.api.model.ProcessStartRequest;
+import com.cmgun.entity.BusiRequest;
+import com.cmgun.entity.dto.DeployDTO;
+import com.cmgun.entity.enums.RequestStatusEnum;
 import com.cmgun.entity.vo.HistoryVO;
-import com.cmgun.entity.vo.ProcessVO;
+import com.cmgun.api.model.Process;
 import com.cmgun.entity.vo.TaskVO;
-import com.cmgun.service.BaseProcessService;
+import com.cmgun.service.ProcessService;
+import com.cmgun.service.BusiRequestService;
 import com.cmgun.utils.ExceptionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
@@ -38,7 +44,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class BaseProcessServiceImpl implements BaseProcessService {
+public class ProcessServiceImpl implements ProcessService {
 
     @Autowired
     private RuntimeService runtimeService;
@@ -50,37 +56,67 @@ public class BaseProcessServiceImpl implements BaseProcessService {
 //    private BaseTaskCommand baseTaskCommand;
     @Autowired
     private RepositoryService repositoryService;
+    @Autowired
+    private BusiRequestService busiRequestService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ProcessVO deployProcess(String processName, String key, MultipartFile multipartFile) throws IOException {
-        log.info("准备部署流程, name:{}, key:{}", processName, key);
+    public Process deployProcess(DeployDTO deployDTO) throws IOException {
+        log.info("准备部署流程, name:{}, key:{}, category:{}", deployDTO.getProcessName()
+                , deployDTO.getKey(), deployDTO.getCategory());
+        MultipartFile file = deployDTO.getFile();
         Deployment deployment = repositoryService.createDeployment()
-                .name(processName)
-                .key(key)
-                .addInputStream(multipartFile.getOriginalFilename(), multipartFile.getInputStream())
+                .name(deployDTO.getProcessName())
+                .key(deployDTO.getKey())
+                .category(deployDTO.getCategory())
+                .addInputStream(file.getOriginalFilename(), file.getInputStream())
                 .deploy();
         ExceptionUtil.businessException(deployment == null, "部署失败");
-        log.info("部署流程结束, name:{}, key:{}, id:{}", processName, key, deployment.getId());
+        log.info("部署流程结束, name:{}, key:{}, category:{}, id:{}", deployDTO.getProcessName()
+                , deployDTO.getKey(), deployDTO.getCategory(), deployment.getId());
         // 查询对应流程定义
         List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery()
                 .deploymentId(deployment.getId())
                 .list();
         ExceptionUtil.businessException(CollectionUtils.isEmpty(processDefinitions), "部署失败，流程定义不存在");
-        return new ProcessVO(deployment, processDefinitions.get(0));
+        ProcessDefinition processDefinition = processDefinitions.get(0);
+        return Process.builder()
+                .id(processDefinition.getId())
+                .processDefinitionKey(processDefinition.getKey())
+                .category(deployment.getCategory())
+                .name(processDefinition.getName())
+                .deploymentTime(deployment.getDeploymentTime())
+                .build();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ProcessVO startProcess(String processDefinitionKey, String businessKey, Object processData) {
+    public Process startProcess(ProcessStartRequest request) {
         Map<String, Object> variables = new HashMap<>();
-        variables.put("data", processData);
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey, businessKey, variables);
+        TaskContext taskContext = request.getTaskContext();
+        // 流程变量
+        variables.put("data", taskContext.getGlobalPayload());
+        // 下个节点的参与组
+        variables.put("candidateGroups", taskContext.getCandidateGroups());
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(request.getProcessDefinitionKey()
+                , request.getBusinessKey(), variables);
         ExceptionUtil.businessException(processInstance == null, "启动流程失败");
         log.info("开启流程, processId:{}, defKey:{}, businessKey:{}", processInstance.getId()
                 , processInstance.getProcessDefinitionKey()
                 , processInstance.getBusinessKey());
-        return new ProcessVO(processInstance);
+        // 记录成功请求记录
+        boolean updateResult = busiRequestService.lambdaUpdate()
+                .eq(BusiRequest::getClientReqNo, request.getRequestNo())
+                .eq(BusiRequest::getSource, request.getSource())
+                .update(BusiRequest.builder()
+                        .status(RequestStatusEnum.SUCCESS.getValue())
+                        .build());
+        ExceptionUtil.businessException(!updateResult, "添加请求记录失败");
+        return Process.builder()
+                .id(processInstance.getId())
+                .processDefinitionKey(processInstance.getProcessDefinitionKey())
+                .businessKey(processInstance.getBusinessKey())
+                .build();
     }
 
     @Override

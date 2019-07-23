@@ -37,7 +37,25 @@ Activiti6 + Spring Boot 2 + Spring Cloud Greenwich integration.
 - 根据用户查询历史审批任务
 
 ---
+### 流程定义规范
+**1、流程定义的限制**
+
+由于流程引擎独立于业务系统，使用ServiceTask和ScriptTask都强耦合于业务代码。
+一期开发从简为主，因此不设计复杂的系统交互流程。
+
+**2、当前支持基本元素**
+1. Start Event   
+1.1. StartEvent
+2. End Event   
+2.1. EndEvent
+3. Task   
+3.1. UserTask
+4. Gateway   
+4.1. ExclusiveGateway
+
+---
 ### 引擎基础设施
 - 请求日志记录
 - 请求流水号防重（Redis）
+- 请求流水记录，支持请求补偿查询
 

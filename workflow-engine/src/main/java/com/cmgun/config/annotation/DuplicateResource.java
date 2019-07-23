@@ -1,4 +1,4 @@
-package com.cmgun.config.aspect;
+package com.cmgun.config.annotation;
 
 import java.lang.annotation.*;
 

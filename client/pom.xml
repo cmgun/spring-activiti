@@ -6,8 +6,7 @@
         <artifactId>spring-boot-activiti-demo</artifactId>
         <groupId>cmgun</groupId>
         <version>1.0-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+    </parent>    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>client</artifactId>
 

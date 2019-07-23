@@ -5,6 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -18,10 +19,11 @@ import java.util.Arrays;
 @Aspect
 @Slf4j
 @Component
+@Order(30)
 public class LogAspect {
 
     /**
-     * 所有controller层
+     * 所有swagger api标注的方法
      */
     @Pointcut("@within(io.swagger.annotations.Api)")
     public void pointcut() {

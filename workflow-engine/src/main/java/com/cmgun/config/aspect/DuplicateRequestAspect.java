@@ -1,7 +1,9 @@
 package com.cmgun.config.aspect;
 
 import com.cmgun.api.common.Request;
+import com.cmgun.config.annotation.DuplicateResource;
 import com.cmgun.config.aspect.exception.DuplicateRequestException;
+import com.cmgun.utils.AopUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.JoinPoint;
@@ -9,6 +11,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Aspect
 @Slf4j
 @Component
+@Order(10)
 public class DuplicateRequestAspect {
 
     /**
@@ -53,14 +57,7 @@ public class DuplicateRequestAspect {
      */
     @Before("pointcut() && @annotation(duplicateResource)")
     public void before(JoinPoint joinPoint, DuplicateResource duplicateResource) {
-        Request request = null;
-        // 获取参数中的request
-        Object[] args = joinPoint.getArgs();
-        for (Object arg : args) {
-            if (arg instanceof Request) {
-                request = (Request) arg;
-            }
-        }
+        Request request = AopUtil.getRequestFromJoinPoint(joinPoint);
         if (request == null) {
             // 没有符合格式的参数
             return;
