@@ -19,7 +19,7 @@ import java.util.List;
  * @author chenqilin
  * @Date 2019/7/23
  */
-@FeignClient(value = "workflow-server", path = "task")
+@FeignClient(value = "workflow-engine", path = "task")
 public interface ActTaskService {
 
     @ApiOperation("查询待办任务")

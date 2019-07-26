@@ -12,7 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @SpringBootApplication
 @EnableFeignClients(basePackages = "com.cmgun.api")
-@MapperScan("com.cmgun.consumer")
+@MapperScan("com.cmgun.consumer.mapper")
 @EnableDiscoveryClient
 public class ConsumerApplication {
 

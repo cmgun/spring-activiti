@@ -6,7 +6,6 @@ import com.cmgun.api.model.TaskAuditRequest;
 import com.cmgun.api.model.ToDoTaskRequest;
 import com.cmgun.api.service.ActProcessService;
 import com.cmgun.api.service.ActTaskService;
-import com.cmgun.consumer.entity.BaseMsg;
 import com.cmgun.consumer.service.ConsumerService;
 import com.cmgun.consumer.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Date;
 
 /**
  * @author chenqilin

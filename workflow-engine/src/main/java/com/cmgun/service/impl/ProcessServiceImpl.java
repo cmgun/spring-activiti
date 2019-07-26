@@ -10,6 +10,7 @@ import com.cmgun.entity.vo.HistoryVO;
 import com.cmgun.service.BusiRequestService;
 import com.cmgun.service.ProcessService;
 import com.cmgun.utils.ExceptionUtil;
+import com.cmgun.utils.TaskUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
@@ -83,14 +84,13 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Process startProcess(ProcessStartRequest request) {
-        Map<String, Object> variables = new HashMap<>();
         TaskContext taskContext = request.getTaskContext();
-        // 流程变量
-        variables.put("data", taskContext.getGlobalPayload());
-        // 下个节点的参与组
-        variables.put("candidateGroups", taskContext.getCandidateGroups());
+        Map<String, Object> context = new HashMap<>();
+        // 初始化流程上下文
+        TaskUtil.globalTaskContext(context, taskContext);
+        // 流程开启
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(request.getProcessDefinitionKey()
-                , request.getBusinessKey(), variables);
+                , request.getBusinessKey(), context);
         ExceptionUtil.businessException(processInstance == null, "启动流程失败");
         log.info("开启流程, processId:{}, defKey:{}, businessKey:{}", processInstance.getId()
                 , processInstance.getProcessDefinitionKey()

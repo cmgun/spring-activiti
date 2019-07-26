@@ -1,5 +1,6 @@
 package com.cmgun.api.common;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotBlank;
  * @Date 2019/7/19
  */
 @Data
+@ApiModel("流程任务上下文")
 public class TaskContext {
 
     /**
@@ -22,7 +24,7 @@ public class TaskContext {
     private String candidateGroups;
 
     /**
-     * 流程上下文，贯穿整个流程，如果已有上下文则直接覆盖
+     * 流程上下文业务数据，贯穿整个流程，如果已有则直接覆盖
      */
     @ApiModelProperty("流程上下文")
     private Object globalPayload;

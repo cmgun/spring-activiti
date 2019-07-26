@@ -8,6 +8,7 @@ import com.cmgun.entity.enums.RequestStatusEnum;
 import com.cmgun.service.BusiRequestService;
 import com.cmgun.service.ProcTaskService;
 import com.cmgun.utils.ExceptionUtil;
+import com.cmgun.utils.TaskUtil;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.identity.Authentication;
@@ -89,7 +90,7 @@ public class ProcTaskServiceImpl implements ProcTaskService {
         return taskList;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void audit(TaskAuditRequest request) {
         String taskId = request.getTaskId();
@@ -114,15 +115,21 @@ public class ProcTaskServiceImpl implements ProcTaskService {
         Authentication.setAuthenticatedUserId(request.getAuditor());
         taskService.addComment(taskId, null, request.getComment());
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("result", request.getAuditResult());
-        params.put("auditorName", request.getAuditorName());
-        taskService.setVariablesLocal(taskId, params);
+        // 更新全局上下文
+        Map<String, Object> globalContext = taskService.getVariables(taskId);
+        TaskUtil.globalTaskContext(globalContext, request.getTaskContext());
+        taskService.setVariables(taskId, globalContext);
+
+        Map<String, Object> localContext = TaskUtil.auditTaskLocalContext(request);
+        taskService.setVariablesLocal(taskId, localContext);
         // 当前用户签收任务
         taskService.claim(taskId, request.getAuditor());
         // 任务审批
-        taskService.complete(taskId, params);
+        taskService.complete(taskId, localContext);
+//        taskService.complete(taskId);
         // 请求更新
         busiRequestService.updateSuccessReq(request);
     }
+
+
 }

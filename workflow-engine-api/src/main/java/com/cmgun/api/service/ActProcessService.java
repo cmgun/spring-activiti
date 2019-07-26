@@ -22,7 +22,7 @@ import java.io.IOException;
  * @author chenqilin
  * @Date 2019/7/16
  */
-@FeignClient(value = "workflow-server", path = "process")
+@FeignClient(value = "workflow-engine", path = "process")
 public interface ActProcessService {
 
     @ApiOperation("流程发布")
