@@ -1,0 +1,44 @@
+@startuml
+客户端 -> 客户端 : 业务数据保存，初始状态
+note left
+    记录请求流水信息
+end note
+客户端 -> ActProcessService : 开启流程请求-start
+note left
+    请求防重校验-Redis
+    业务请求记录-DB
+    注意：
+    同一个业务下的流程，可启动多次，生成多条运行流程。
+    目前根据请求流水号做防重处理。
+end note
+ActProcessService ->  ActProcessController: HTTP-start
+ActProcessController -> ActProcessController : 请求参数校验
+alt 校验不通过
+    客户端 <-- ActProcessController : code=400，请求参数不合法
+    客户端 -> 客户端 : 业务数据，状态：人工处理
+else 请求重复
+    客户端 <-- ActProcessController : code=402，请求流水重复
+    客户端 -> 客户端 : 业务数据，状态：人工处理
+end alt
+note left
+    记录请求流水信息，提供请求流水补偿查询
+end note
+ActProcessController -> ProcessService : startProcess
+ProcessService -> ProcessService : 开启流程
+note left
+    添加运行流程和相关信息到表中
+    ACT_RU_EXECUTION
+    ACT_RU_TASK
+    ACT_RU_IDENTITYLINK
+    ACT_RU_VARIABLE
+end note
+ActProcessController <-- ProcessService : 流程启动结果
+alt 启动失败
+    客户端 <-- ActProcessController : code=900，业务异常
+    客户端 -> 客户端 : 业务数据，状态：业务异常-人工处理
+else 启动成功
+    客户端 <-- ActProcessController : code=200，成功
+else 请求或响应超时
+    客户端 -> 客户端 : 重试补偿批量
+end alt
+@enduml

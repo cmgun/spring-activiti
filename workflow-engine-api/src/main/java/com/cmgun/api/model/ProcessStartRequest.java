@@ -2,6 +2,7 @@ package com.cmgun.api.model;
 
 import com.cmgun.api.common.Request;
 import com.cmgun.api.common.TaskContext;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@ApiModel("流程开启参数")
 public class ProcessStartRequest extends Request {
 
     private static final long serialVersionUID = -1992424046597943733L;

@@ -43,10 +43,10 @@
             <artifactId>commons-collections4</artifactId>
         </dependency>
 
-        <!-- mybatis -->
+        <!-- mybatis-plus -->
         <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
 
         <!-- 添加druid依赖 -->

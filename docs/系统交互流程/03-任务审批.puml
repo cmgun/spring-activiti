@@ -1,0 +1,132 @@
+@startuml
+== 标准流程的任务审批（not recommend） ==
+== 1、任务认领 ==
+客户端 -> ActTaskService : 认领任务请求
+note left
+    两种任务审批流程对比说明，见README.md
+    该标准流程需要多个重试补偿处理，
+    没有分布式事务框架支持不建议使用
+end note
+ActTaskService -> ActTaskController : HTTP-claim
+ActTaskController -> ProcTaskService : claim
+note left
+    请求防重校验-Redis
+end note
+ProcTaskService -> ProcTaskService : 任务认领处理
+note left
+    相关表更新 TODO
+end note
+ActTaskController <-- ProcTaskService : 处理结果
+alt 任务认领成功
+    客户端 <-- ActTaskController : code=200，任务认领成功
+else 认领失败
+    客户端 <-- ActTaskController : code=900，任务认领失败
+    客户端 -> 客户端 : 可以做重试处理
+else 无操作权限
+    客户端 <-- ActTaskController : code=401，用户/用户组无此操作权限
+end alt
+
+== 2、业务处理 ==
+客户端 -> 客户端 : 收到认领成功结果后，进行业务逻辑处理
+alt 业务处理失败
+    客户端 -> ActTaskService : 取消认领任务请求
+    ActTaskService -> ActTaskController : HTTP-unclaim
+    ActTaskController -> ProcTaskService : unclaim
+    note left
+        请求防重校验-Redis
+    end note
+    ProcTaskService -> ProcTaskService : 任务取消认领处理
+    ProcTaskService -> ProcTaskService : 任务认领处理
+    note left
+        相关表更新 TODO
+    end note
+    ActTaskController <-- ProcTaskService : 处理结果
+    alt 任务取消认领成功
+        客户端 <-- ActTaskController : code=200，任务取消认领成功
+    else 认领失败
+        客户端 <-- ActTaskController : code=900，任务取消认领失败
+        客户端 -> 客户端 : 可以做重试处理
+    else 无操作权限
+        客户端 <-- ActTaskController : code=401，用户/用户组无此操作权限
+    end alt
+end alt
+
+== 3、任务完成 ==
+客户端 -> ActTaskService : 任务完成请求
+ActTaskService -> ActTaskController : HTTP-complete
+ActTaskController -> ProcTaskService : complete
+note left
+    请求防重校验-Redis
+    业务请求记录-DB
+end note
+ProcTaskService -> ProcTaskService : 任务完成处理
+note left
+    相关表更新 TODO
+end note
+ActTaskController <-- ProcTaskService : 处理结果
+alt 任务完成处理成功
+    客户端 <-- ActTaskController : code=200，任务完成处理成功
+else 任务完成处理失败
+    客户端 <-- ActTaskController : code=900，任务完成处理失败
+    客户端 -> 客户端 : 可以做重试处理（需要更换流水号）
+else 无操作权限
+    客户端 <-- ActTaskController : code=401，用户/用户组无此操作权限
+end alt
+== 标准流程的任务审批 end ==
+
+== 简化版的任务审批 ==
+== 1、业务处理 ==
+客户端 -> 客户端 : 从待办任务中获取任务，进行业务处理
+note left
+    需要保证业务有防重处理机制，
+    因此此时可能会有多个用户针对同一个
+    待办任务进行操作（候选组待办任务查询）
+end note
+alt 业务处理失败
+    客户端 -> 客户端 : 回滚结束，不需要走后续流程
+end alt
+
+== 2、任务审批处理 ==
+客户端 -> ActTaskService : 任务审批处理请求
+note left
+    记录请求流水信息，status=初始化
+end note
+ActTaskService -> ActTaskController : HTTP-audit
+ActTaskController -> ProcTaskService : audit
+note left
+    请求防重校验-Redis
+    业务请求记录-DB
+end note
+ProcTaskService -> ProcTaskService : 任务审批处理
+note left
+    包含以下处理：
+    1. 用户/用户组权限校验
+    2. 任务认领处理
+    3. 任务完成处理
+end note
+ActTaskController <-- ProcTaskService : 处理结果
+alt 任务审批处理成功
+    客户端 <-- ActTaskController : code=200，任务审批处理成功
+    note left
+        记录请求流水信息，status=成功
+    end note
+else 任务审批处理失败
+    客户端 <-- ActTaskController : code=900，任务审批处理失败
+    客户端 -> 客户端 : 回滚业务数据
+    note left
+        可以做重试处理（需要更换流水号）
+        记录请求流水信息，status=失败
+    end note
+else 无操作权限
+    客户端 <-- ActTaskController : code=401，用户/用户组无此操作权限
+else 响应超时
+    客户端 -> 客户端 : 重试补偿处理
+    note left
+        记录请求流水信息，status=待重试补偿
+        后续批量进行请求回查，回查成功更新流水状态后
+        ，后续业务才能继续使用该业务数据
+    end note
+end alt
+
+== 简化版的任务审批 end ==
+@enduml

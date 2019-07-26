@@ -1,6 +1,7 @@
 package com.cmgun.api.model;
 
 import com.cmgun.api.common.Request;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,6 +17,7 @@ import java.io.Serializable;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@ApiModel("待办任务参数")
 public class ToDoTaskRequest implements Serializable {
 
     private static final long serialVersionUID = -2251320373702545747L;

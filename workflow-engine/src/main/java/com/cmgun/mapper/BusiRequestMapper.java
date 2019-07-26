@@ -15,7 +15,4 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface BusiRequestMapper extends BaseMapper<BusiRequest> {
 
-    @Update("")
-    int updateStatusByClientReqNo(@Param("clientReqNo") String clientReqNo, @Param("source") String source
-            , @Param("status") int status);
 }

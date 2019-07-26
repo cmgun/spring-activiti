@@ -1,0 +1,23 @@
+@startuml
+客户端 -> ActProcessService : 部署请求-deploy
+note left
+    记录请求流水信息
+end note
+ActProcessService ->  ActProcessController: HTTP-deploy
+ActProcessController -> ActProcessController : 请求参数校验
+alt 校验不通过
+    客户端 <-- ActProcessController : code=402，请求参数不合法
+end alt
+note left
+    记录请求流水信息，提供请求流水补偿查询
+end note
+ActProcessController -> BaseProcessService : deployProcess
+ActProcessController <-- BaseProcessService : 部署结果
+alt 部署失败
+    客户端 <-- ActProcessController : code=900，业务异常
+else 部署成功
+    客户端 <-- ActProcessController : code=200，成功
+else 请求或响应超时
+    客户端 -> 客户端 : 重试补偿批量
+end alt
+@enduml

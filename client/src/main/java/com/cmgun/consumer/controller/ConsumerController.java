@@ -2,9 +2,12 @@ package com.cmgun.consumer.controller;
 
 import com.cmgun.api.common.Response;
 import com.cmgun.api.model.ProcessStartRequest;
+import com.cmgun.api.model.TaskAuditRequest;
 import com.cmgun.api.model.ToDoTaskRequest;
 import com.cmgun.api.service.ActProcessService;
 import com.cmgun.api.service.ActTaskService;
+import com.cmgun.consumer.entity.BaseMsg;
+import com.cmgun.consumer.service.ConsumerService;
 import com.cmgun.consumer.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Date;
 
 /**
  * @author chenqilin
@@ -29,7 +34,8 @@ public class ConsumerController {
     private ActProcessService actProcessNameService;
     @Autowired
     private ActTaskService actTaskService;
-
+    @Autowired
+    private ConsumerService consumerService;
 
     @PostMapping("deploy")
     public Response deploy(String fileName, String processName) throws Exception {
@@ -53,5 +59,10 @@ public class ConsumerController {
     public Response todoList(@RequestBody ToDoTaskRequest request) {
         Response response = actTaskService.todoList(request);
         return response;
+    }
+
+    @PostMapping("audit")
+    public Response audit(@RequestBody TaskAuditRequest request) {
+        return consumerService.audit(request);
     }
 }

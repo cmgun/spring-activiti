@@ -22,7 +22,11 @@ public enum BusiTypeEnum {
     /**
      * 流程开启
      */
-    PROC_START(20);
+    PROC_START(20),
+    /**
+     * 任务审批
+     */
+    TASK_AUDIT(30);
 
     /**
      * value

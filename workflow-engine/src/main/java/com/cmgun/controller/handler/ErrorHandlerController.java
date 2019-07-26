@@ -4,6 +4,7 @@ import com.cmgun.api.common.Response;
 import com.cmgun.config.aspect.exception.DuplicateRequestException;
 import com.cmgun.exception.ActBusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -47,9 +48,9 @@ public class ErrorHandlerController {
      * @param exception 异常
      * @return 响应
      */
-    @ExceptionHandler(DuplicateRequestException.class)
+    @ExceptionHandler({DuplicateRequestException.class, DuplicateKeyException.class})
     @ResponseBody
-    public Response DuplicateRequestExceptionHandler(HttpServletRequest request, DuplicateRequestException exception) {
+    public Response DuplicateRequestExceptionHandler(HttpServletRequest request, Exception exception) {
         log.warn("DuplicateRequestExceptionHandler，url:{}", request.getRequestURI(), exception);
         return Response.builder()
                 .code(Response.REPEAT_REQUEST)

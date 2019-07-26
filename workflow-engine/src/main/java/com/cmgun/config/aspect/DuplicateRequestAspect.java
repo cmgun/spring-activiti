@@ -1,7 +1,7 @@
 package com.cmgun.config.aspect;
 
 import com.cmgun.api.common.Request;
-import com.cmgun.config.annotation.DuplicateResource;
+import com.cmgun.config.annotation.DuplicateValidation;
 import com.cmgun.config.aspect.exception.DuplicateRequestException;
 import com.cmgun.utils.AopUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -53,10 +53,10 @@ public class DuplicateRequestAspect {
      * 接口层处理前的请求防重校验
      *
      * @param joinPoint
-     * @param duplicateResource
+     * @param duplicateValidation
      */
-    @Before("pointcut() && @annotation(duplicateResource)")
-    public void before(JoinPoint joinPoint, DuplicateResource duplicateResource) {
+    @Before("pointcut() && @annotation(duplicateValidation)")
+    public void before(JoinPoint joinPoint, DuplicateValidation duplicateValidation) {
         Request request = AopUtil.getRequestFromJoinPoint(joinPoint);
         if (request == null) {
             // 没有符合格式的参数

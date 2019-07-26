@@ -64,6 +64,19 @@ public class Response<T> {
      * @param message 信息
      * @return 响应体
      */
+    public static Response success(String message) {
+        return Response.builder()
+                .code(OK)
+                .message(message)
+                .build();
+    }
+
+    /**
+     * 成功
+     *
+     * @param message 信息
+     * @return 响应体
+     */
     public static <T> Response<T> success(String message, T payload) {
         return Response.<T>builder()
                 .code(OK)

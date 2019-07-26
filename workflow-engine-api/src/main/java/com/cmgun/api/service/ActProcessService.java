@@ -35,7 +35,7 @@ public interface ActProcessService {
 
     @ApiOperation("流程开启")
     @PostMapping("start")
-    Response<Process> start(@RequestBody @Validated ProcessStartRequest request);
+    Response<Process> start(@RequestBody @Validated @ApiParam(value = "流程开启参数", required = true) ProcessStartRequest request);
 
     @ApiOperation("流程挂起")
     @PostMapping("suspend")

@@ -3,7 +3,7 @@ package com.cmgun.controller;
 import com.cmgun.api.common.Response;
 import com.cmgun.api.model.ProcessStartRequest;
 import com.cmgun.api.service.ActProcessService;
-import com.cmgun.config.annotation.DuplicateResource;
+import com.cmgun.config.annotation.DuplicateValidation;
 import com.cmgun.config.annotation.RequestPersistence;
 import com.cmgun.entity.dto.DeployDTO;
 import com.cmgun.entity.enums.BusiTypeEnum;
@@ -58,7 +58,7 @@ public class ActProcessController implements ActProcessService {
     }
 
     @RequestPersistence(busiType = BusiTypeEnum.PROC_START)
-    @DuplicateResource
+    @DuplicateValidation
     @Override
     public Response<Process> start(ProcessStartRequest request) {
         Process processVO = processService.startProcess(request);

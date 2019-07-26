@@ -1,11 +1,9 @@
 package com.cmgun.service;
 
+import com.cmgun.api.model.Process;
 import com.cmgun.api.model.ProcessStartRequest;
 import com.cmgun.entity.dto.DeployDTO;
 import com.cmgun.entity.vo.HistoryVO;
-import com.cmgun.api.model.Process;
-import com.cmgun.entity.vo.TaskVO;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,10 +28,6 @@ public interface ProcessService {
      * @return 流程实例
      */
     Process startProcess(ProcessStartRequest request);
-
-    List<TaskVO> queryGroupToDoTasks(String groupName);
-
-    void approveTask(String taskId, String groupName, String approveResult, String comments);
 
     List<HistoryVO> queryHistory(String userId, String businessKey);
 }

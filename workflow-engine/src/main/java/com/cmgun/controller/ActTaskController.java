@@ -2,8 +2,12 @@ package com.cmgun.controller;
 
 import com.cmgun.api.common.Response;
 import com.cmgun.api.model.Task;
+import com.cmgun.api.model.TaskAuditRequest;
 import com.cmgun.api.model.ToDoTaskRequest;
 import com.cmgun.api.service.ActTaskService;
+import com.cmgun.config.annotation.DuplicateValidation;
+import com.cmgun.config.annotation.RequestPersistence;
+import com.cmgun.entity.enums.BusiTypeEnum;
 import com.cmgun.service.ProcTaskService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -32,5 +36,13 @@ public class ActTaskController implements ActTaskService {
     public Response<List<Task>> todoList(ToDoTaskRequest request) {
         List<Task> taskList = taskService.queryToDoList(request);
         return Response.success("查询成功", taskList);
+    }
+
+    @RequestPersistence(busiType = BusiTypeEnum.TASK_AUDIT)
+    @DuplicateValidation
+    @Override
+    public Response audit(TaskAuditRequest request) {
+        taskService.audit(request);
+        return Response.success("任务审批成功");
     }
 }
