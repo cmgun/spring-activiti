@@ -16,6 +16,8 @@ import java.io.Serializable;
 @Data
 public class Request implements Serializable {
 
+    private static final long serialVersionUID = 2956649160187048898L;
+
     @NotBlank(message = "请求流水号不能为空")
     @ApiModelProperty("请求流水号")
     protected String requestNo;

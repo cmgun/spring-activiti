@@ -1,5 +1,6 @@
 package com.cmgun.api.service;
 
+import com.cmgun.api.common.PageResult;
 import com.cmgun.api.common.Response;
 import com.cmgun.api.model.Task;
 import com.cmgun.api.model.TaskAuditRequest;
@@ -10,8 +11,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.List;
 
 /**
  * 任务管理
@@ -24,7 +23,7 @@ public interface ActTaskService {
 
     @ApiOperation("查询待办任务")
     @PostMapping("todoList")
-    Response<List<Task>> todoList(@RequestBody @Validated @ApiParam(value = "待办任务查询参数", required = true)
+    Response<PageResult<Task>> todoList(@RequestBody @Validated @ApiParam(value = "待办任务查询参数", required = true)
                                           ToDoTaskRequest request);
 
     @ApiOperation("任务审批")

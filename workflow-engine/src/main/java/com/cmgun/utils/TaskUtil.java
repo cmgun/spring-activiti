@@ -1,9 +1,13 @@
 package com.cmgun.utils;
 
 import com.cmgun.api.common.TaskContext;
+import com.cmgun.api.model.Comment;
 import com.cmgun.api.model.TaskAuditRequest;
+import com.google.common.collect.Lists;
+import org.activiti.engine.history.HistoricVariableInstance;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,23 +21,23 @@ public class TaskUtil {
     /**
      * 任务参与组
      */
-    private final static String CANDIDATE_GROUPS = "candidateGroups";
+    public final static String CANDIDATE_GROUPS = "candidateGroups";
     /**
      * 流程业务数据，贯穿整个流程生命周期
      */
-    private final static String PROCESS_DATA = "data";
+    public final static String PROCESS_DATA = "data";
     /**
      * 任务上下文，审批用户名称
      */
-    private final static String AUDITOR_NAME = "auditorName";
+    public final static String AUDITOR_NAME = "auditorName";
     /**
      * 任务审批用户id
      */
-    private final static String AUDITOR = "auditor";
+    public final static String AUDITOR = "auditor";
     /**
      * 任务审批结果
      */
-    private final static String RESULT = "result";
+    public final static String RESULT = "result";
 
 
     /**
@@ -62,5 +66,53 @@ public class TaskUtil {
         localContext.put(RESULT, request.getAuditResult());
         localContext.put(AUDITOR_NAME, request.getAuditorName());
         return localContext;
+    }
+
+    /**
+     * 从历史变量中获取审批处理结果
+     *
+     * @param localVariables 历史变量
+     * @return 审批处理结果
+     */
+    public static Object getTaskAuditResult(List<HistoricVariableInstance> localVariables) {
+        for (HistoricVariableInstance variable : localVariables) {
+            if (RESULT.equals(variable.getVariableName())) {
+                return variable.getValue();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 从历史变量中获取流程变量结果
+     *
+     * @param globalVariables 历史变量
+     * @return 审批处理结果
+     */
+    public static Object getProcessData(List<HistoricVariableInstance> globalVariables) {
+        for (HistoricVariableInstance variable : globalVariables) {
+            if (PROCESS_DATA.equals(variable.getVariableName())) {
+                return variable.getValue();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取任务审批备注记录
+     *
+     * @param rawComments 原始审批备注
+     * @return 审批备注记录
+     */
+    public static List<Comment> getComments(List<org.activiti.engine.task.Comment> rawComments) {
+        List<Comment> comments = Lists.newArrayList();
+        for (org.activiti.engine.task.Comment rawComment : rawComments) {
+            Comment comment = Comment.builder()
+                    .userId(rawComment.getUserId())
+                    .comment(rawComment.getFullMessage())
+                    .build();
+            comments.add(comment);
+        }
+        return comments;
     }
 }

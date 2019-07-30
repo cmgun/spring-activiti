@@ -1,5 +1,7 @@
 package com.cmgun.api.common;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,6 +13,7 @@ import lombok.Data;
  */
 @Data
 @Builder
+@ApiModel("响应结果")
 public class Response<T> {
 
     /**
@@ -46,16 +49,19 @@ public class Response<T> {
     /**
      * 响应码
      */
+    @ApiModelProperty(value = "响应码", dataType = "Long", required = true)
     private Long code;
 
     /**
      * 信息
      */
+    @ApiModelProperty(value = "描述信息", dataType = "String", required = true)
     private String message;
 
     /**
      * 业务数据
      */
+    @ApiModelProperty(value = "业务数据")
     private T payload;
 
     /**

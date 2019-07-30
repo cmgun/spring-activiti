@@ -1,5 +1,6 @@
 package com.cmgun.api.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -35,5 +36,6 @@ public class Process implements Serializable {
     private String name;
 
     @ApiModelProperty("部署时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date deploymentTime;
 }

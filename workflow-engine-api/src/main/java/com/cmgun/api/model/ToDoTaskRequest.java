@@ -1,13 +1,13 @@
 package com.cmgun.api.model;
 
-import com.cmgun.api.common.Request;
+import com.cmgun.api.common.PageQuery;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotBlank;
-import java.io.Serializable;
 
 /**
  * 待办任务查询
@@ -16,9 +16,10 @@ import java.io.Serializable;
  * @Date 2019/7/23
  */
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = false)
-@ApiModel("待办任务参数")
-public class ToDoTaskRequest implements Serializable {
+@ApiModel("待办任务查询参数")
+public class ToDoTaskRequest extends PageQuery {
 
     private static final long serialVersionUID = -2251320373702545747L;
 

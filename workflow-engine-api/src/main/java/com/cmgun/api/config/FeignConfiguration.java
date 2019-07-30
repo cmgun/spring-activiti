@@ -27,6 +27,5 @@ public class FeignConfiguration {
     @Bean
     public Encoder multipartFormEncoder() {
         return new SpringFormEncoder(new SpringEncoder(messageConverters));
-//        return new SpringFormEncoder();
     }
 }

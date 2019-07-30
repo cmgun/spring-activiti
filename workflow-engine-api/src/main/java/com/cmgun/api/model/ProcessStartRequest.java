@@ -4,6 +4,7 @@ import com.cmgun.api.common.Request;
 import com.cmgun.api.common.TaskContext;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotNull;
  * @Date 2019/7/17
  */
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = false)
 @ApiModel("流程开启参数")
 public class ProcessStartRequest extends Request {

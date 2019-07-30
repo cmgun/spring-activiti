@@ -54,7 +54,7 @@ public class ErrorHandlerController {
         log.warn("DuplicateRequestExceptionHandler，url:{}", request.getRequestURI(), exception);
         return Response.builder()
                 .code(Response.REPEAT_REQUEST)
-                .message(exception.getMessage())
+                .message("请求流水号重复")
                 .build();
     }
 

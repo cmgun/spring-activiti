@@ -1,5 +1,6 @@
 package com.cmgun.service;
 
+import com.cmgun.api.common.PageResult;
 import com.cmgun.api.model.Task;
 import com.cmgun.api.model.TaskAuditRequest;
 import com.cmgun.api.model.ToDoTaskRequest;
@@ -20,7 +21,7 @@ public interface ProcTaskService {
      * @param toDoTaskRequest 参数
      * @return 待办任务列表
      */
-    List<Task> queryToDoList(ToDoTaskRequest toDoTaskRequest);
+    PageResult<Task> queryToDoList(ToDoTaskRequest toDoTaskRequest);
 
     /**
      * 任务审批

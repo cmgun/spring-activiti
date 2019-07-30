@@ -1,5 +1,7 @@
 package com.cmgun.api.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +18,7 @@ import java.util.Map;
  */
 @Data
 @Builder
+@ApiModel("任务信息体")
 public class Task implements Serializable {
 
     private static final long serialVersionUID = 2679246220675811368L;
@@ -35,12 +38,14 @@ public class Task implements Serializable {
     @ApiModelProperty("流程类型")
     private String category;
 
-    @ApiModelProperty("流程变量")
+    @ApiModelProperty("流程变量，业务数据")
     private Object data;
 
     @ApiModelProperty("创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     @ApiModelProperty("到期时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date dueDate;
 }

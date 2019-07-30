@@ -1,5 +1,6 @@
 package com.cmgun.controller;
 
+import com.cmgun.api.common.PageResult;
 import com.cmgun.api.common.Response;
 import com.cmgun.api.model.Task;
 import com.cmgun.api.model.TaskAuditRequest;
@@ -14,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * 任务管理
@@ -33,9 +32,9 @@ public class ActTaskController implements ActTaskService {
     private ProcTaskService taskService;
 
     @Override
-    public Response<List<Task>> todoList(ToDoTaskRequest request) {
-        List<Task> taskList = taskService.queryToDoList(request);
-        return Response.success("查询成功", taskList);
+    public Response<PageResult<Task>> todoList(ToDoTaskRequest request) {
+        PageResult<Task> pageResult = taskService.queryToDoList(request);
+        return Response.success("查询成功", pageResult);
     }
 
     @RequestPersistence(busiType = BusiTypeEnum.TASK_AUDIT)

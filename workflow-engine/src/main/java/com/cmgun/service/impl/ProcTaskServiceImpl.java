@@ -1,10 +1,9 @@
 package com.cmgun.service.impl;
 
+import com.cmgun.api.common.PageResult;
 import com.cmgun.api.model.Task;
 import com.cmgun.api.model.TaskAuditRequest;
 import com.cmgun.api.model.ToDoTaskRequest;
-import com.cmgun.entity.BusiRequest;
-import com.cmgun.entity.enums.RequestStatusEnum;
 import com.cmgun.service.BusiRequestService;
 import com.cmgun.service.ProcTaskService;
 import com.cmgun.utils.ExceptionUtil;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +40,50 @@ public class ProcTaskServiceImpl implements ProcTaskService {
     private BusiRequestService busiRequestService;
 
     @Override
-    public List<Task> queryToDoList(ToDoTaskRequest request) {
+    public PageResult<Task> queryToDoList(ToDoTaskRequest request) {
+        TaskQuery query = todoTaskQuery(request);
+        // 分页查询
+        List<org.activiti.engine.task.Task> tasks  = query.listPage(request.getStartRow(), request.getPageSize());
+        // 总数
+        long count = query.count();
+        // 查询结果处理
+        if (CollectionUtils.isEmpty(tasks)) {
+            return PageResult.empty(request, count);
+        }
+        // 封装对象
+        List<Task> taskList = new ArrayList<>();
+        for (org.activiti.engine.task.Task rawTask : tasks) {
+            Task.TaskBuilder builder = Task.builder()
+                    .taskId(rawTask.getId())
+                    .dueDate(rawTask.getDueDate())
+                    .createTime(rawTask.getCreateTime())
+                    .processDefinitionId(rawTask.getProcessDefinitionId())
+                    .category(rawTask.getCategory());
+            // 流程变量
+            Map<String, Object> variables = taskService.getVariables(rawTask.getId());
+            if (variables != null) {
+                builder.data(variables.get(TaskUtil.PROCESS_DATA));
+            }
+            // 流程实例
+            List<ProcessInstance> processInstances = runtimeService.createProcessInstanceQuery()
+                    .processInstanceId(rawTask.getProcessInstanceId())
+                    .list();
+            if (CollectionUtils.isNotEmpty(processInstances)) {
+                builder.businessKey(processInstances.get(0).getBusinessKey());
+                builder.processDefinitionKey(processInstances.get(0).getProcessDefinitionKey());
+            }
+            taskList.add(builder.build());
+        }
+        return PageResult.result(request, count, taskList);
+    }
+
+    /**
+     * 构建待办任务查询，进行必要查询条件校验
+     *
+     * @param request 查询参数
+     * @return 待办任务查询
+     */
+    private TaskQuery todoTaskQuery(ToDoTaskRequest request) {
         // 用户组或用户必须存在一个非空
         ExceptionUtil.businessException(request.getAssignee() == null && request.getCandidateGroup() == null
                 && request.getCandidateUser() == null, "用户组或用户查询条件不能都为空");
@@ -58,36 +99,9 @@ public class ProcTaskServiceImpl implements ProcTaskService {
         if (request.getAssignee() != null) {
             query.taskAssignee(request.getAssignee());
         }
-        // 查询
-        List<org.activiti.engine.task.Task> tasks  = query.list();
-        if (CollectionUtils.isEmpty(tasks)) {
-            return new ArrayList<>();
-        }
-        // 封装对象
-        List<Task> taskList = new ArrayList<>();
-        for (org.activiti.engine.task.Task rawTask : tasks) {
-            Task.TaskBuilder builder = Task.builder()
-                    .taskId(rawTask.getId())
-                    .dueDate(rawTask.getDueDate())
-                    .createTime(rawTask.getCreateTime())
-                    .processDefinitionId(rawTask.getProcessDefinitionId())
-                    .category(rawTask.getCategory());
-            // 流程变量
-            Map<String, Object> variables = taskService.getVariables(rawTask.getId());
-            if (variables != null) {
-                builder.data(variables.get("data"));
-            }
-            // 流程实例
-            List<ProcessInstance> processInstances = runtimeService.createProcessInstanceQuery()
-                    .processInstanceId(rawTask.getProcessInstanceId())
-                    .list();
-            if (CollectionUtils.isNotEmpty(processInstances)) {
-                builder.businessKey(processInstances.get(0).getBusinessKey());
-                builder.processDefinitionKey(processInstances.get(0).getProcessDefinitionKey());
-            }
-            taskList.add(builder.build());
-        }
-        return taskList;
+        query.orderByTaskCreateTime();
+        query.desc();
+        return query;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -126,7 +140,6 @@ public class ProcTaskServiceImpl implements ProcTaskService {
         taskService.claim(taskId, request.getAuditor());
         // 任务审批
         taskService.complete(taskId, localContext);
-//        taskService.complete(taskId);
         // 请求更新
         busiRequestService.updateSuccessReq(request);
     }

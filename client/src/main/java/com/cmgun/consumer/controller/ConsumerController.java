@@ -1,9 +1,11 @@
 package com.cmgun.consumer.controller;
 
 import com.cmgun.api.common.Response;
+import com.cmgun.api.model.HistoryQueryRequest;
 import com.cmgun.api.model.ProcessStartRequest;
 import com.cmgun.api.model.TaskAuditRequest;
 import com.cmgun.api.model.ToDoTaskRequest;
+import com.cmgun.api.service.ActHistoryService;
 import com.cmgun.api.service.ActProcessService;
 import com.cmgun.api.service.ActTaskService;
 import com.cmgun.consumer.service.ConsumerService;
@@ -31,6 +33,8 @@ public class ConsumerController {
     private ActProcessService actProcessNameService;
     @Autowired
     private ActTaskService actTaskService;
+    @Autowired
+    private ActHistoryService actHistoryService;
     @Autowired
     private ConsumerService consumerService;
 
@@ -61,5 +65,11 @@ public class ConsumerController {
     @PostMapping("audit")
     public Response audit(@RequestBody TaskAuditRequest request) {
         return consumerService.audit(request);
+    }
+
+    @PostMapping("history")
+    public Response history(@RequestBody HistoryQueryRequest request) {
+        Response response = actHistoryService.query(request);
+        return response;
     }
 }

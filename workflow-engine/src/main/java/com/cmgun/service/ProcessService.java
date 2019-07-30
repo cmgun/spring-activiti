@@ -28,6 +28,4 @@ public interface ProcessService {
      * @return 流程实例
      */
     Process startProcess(ProcessStartRequest request);
-
-    List<HistoryVO> queryHistory(String userId, String businessKey);
 }
