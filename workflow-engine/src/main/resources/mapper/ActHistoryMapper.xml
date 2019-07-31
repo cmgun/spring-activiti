@@ -43,10 +43,15 @@
         ACT_HI_TASKINST RES
         INNER JOIN ACT_HI_IDENTITYLINK HI ON HI.TASK_ID_ = RES.ID_
         WHERE
-        RES.END_TIME_ IS NOT NULL
-        AND RES.CATEGORY_ = #{category}
+        <if test="param.completeTask == true">
+            RES.END_TIME_ IS NOT NULL
+        </if>
+        <if test="param.completeTask == false">
+            RES.END_TIME_ IS NULL
+        </if>
+        AND RES.CATEGORY_ = #{param.category}
         AND HI.TYPE_ = 'candidate'
-        AND (HI.GROUP_ID_ IN(#{groupId}))
+        AND (HI.GROUP_ID_ IN(#{param.candidateGroup}))
         ORDER BY
         RES.END_TIME_ DESC
     </sql>

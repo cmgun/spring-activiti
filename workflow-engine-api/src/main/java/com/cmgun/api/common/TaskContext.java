@@ -20,7 +20,7 @@ public class TaskContext {
      * 下个任务节点的参与组，多个用逗号分隔
      */
     @NotBlank(message = "下个任务节点参与组不能为空")
-    @ApiModelProperty("下个任务节点的参与组")
+    @ApiModelProperty("下个任务节点的参与组，多个使用逗号分隔")
     private String candidateGroups;
 
     /**

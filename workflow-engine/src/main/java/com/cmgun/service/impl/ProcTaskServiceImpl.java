@@ -9,6 +9,7 @@ import com.cmgun.service.ProcTaskService;
 import com.cmgun.utils.ExceptionUtil;
 import com.cmgun.utils.PageUtil;
 import com.cmgun.utils.TaskUtil;
+import com.google.common.collect.Lists;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.identity.Authentication;
@@ -43,13 +44,10 @@ public class ProcTaskServiceImpl implements ProcTaskService {
     @Override
     public PageResult<Task> queryToDoList(ToDoTaskRequest request) {
         TaskQuery query = todoTaskQuery(request);
+        // 查询结果
+        List<org.activiti.engine.task.Task> tasks = Lists.newArrayList();
         // 总数
-        long count = query.count();
-        if (PageUtil.isOutOfRange(count, request)) {
-            return PageResult.empty(request, count);
-        }
-        // 分页查询
-        List<org.activiti.engine.task.Task> tasks  = query.listPage(request.getStartRow(), request.getPageSize());
+        long count = PageUtil.query(query, request, tasks);
         // 封装对象
         List<Task> taskList = new ArrayList<>();
         for (org.activiti.engine.task.Task rawTask : tasks) {

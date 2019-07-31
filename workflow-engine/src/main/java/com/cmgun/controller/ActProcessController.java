@@ -64,14 +64,4 @@ public class ActProcessController implements ActProcessService {
         Process processVO = processService.startProcess(request);
         return Response.success("流程启动成功", processVO);
     }
-
-    @Override
-    public Response suspend() {
-        return null;
-    }
-
-    @Override
-    public Response activate() {
-        return null;
-    }
 }

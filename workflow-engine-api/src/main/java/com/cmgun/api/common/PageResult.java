@@ -34,6 +34,9 @@ public class PageResult<T> {
     @ApiModelProperty(value = "分页数据", required = true)
     private Collection<T> data;
 
+    @ApiModelProperty(value = "是否忽略分页条件查询全部", notes = "如果该字段为true，返回全部符合条件的记录")
+    private boolean queryAll;
+
     /**
      * 空结果
      *
@@ -64,6 +67,7 @@ public class PageResult<T> {
         return PageResult.<T>builder()
                 .pageNo(pageQuery.getPageNo())
                 .pageSize(pageQuery.getPageSize())
+                .queryAll(pageQuery.getQueryAll())
                 .total(total)
                 .pageCount((int) Math.ceil((double) total / pageQuery.getPageSize()))
                 .data(data)

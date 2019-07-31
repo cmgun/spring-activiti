@@ -16,7 +16,7 @@ import java.util.List;
 public interface ProcTaskService {
 
     /**
-     * 查询待办任务
+     * 分页查询待办任务
      *
      * @param toDoTaskRequest 参数
      * @return 待办任务列表

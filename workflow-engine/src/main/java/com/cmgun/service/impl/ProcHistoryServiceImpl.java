@@ -48,26 +48,23 @@ public class ProcHistoryServiceImpl implements ProcHistoryService {
         }
         // 其余情况
         HistoricTaskInstanceQuery query = getHistoryQuery(request);
+        // 查询结果
+        List<HistoricTaskInstance> historicTasks = Lists.newArrayList();
         // 总数
-        long count = query.count();
-        if (PageUtil.isOutOfRange(count, request)) {
-            return PageResult.empty(request, count);
-        }
-        // 分页查询
-        List<HistoricTaskInstance> historicTasks = query.listPage(request.getStartRow(), request.getPageSize());
+        long count = PageUtil.query(query, request, historicTasks);
         // 结果填充
         return getHistoryPageResult(request, count, historicTasks);
     }
 
     @Override
     public PageResult<History> queryHistoryByCandidateGroup(HistoryQueryRequest request) {
-        long count = actHistoryMapper.countByCandidateGroup(request.getCategory(), request.getCandidateGroup());
+        long count = actHistoryMapper.countByCandidateGroup(request);
         if (PageUtil.isOutOfRange(count, request)) {
             return PageResult.empty(request, count);
         }
         // 分页查询
-        List<HistoricTaskInstance> historicTasks = actHistoryMapper.queryByCandidateGroup(request.getCategory()
-                , request.getCandidateGroup(), request.getStartRow(), request.getPageSize());
+        List<HistoricTaskInstance> historicTasks = actHistoryMapper.queryByCandidateGroup(request,
+                request.getStartRow(), request.getPageSize());
         // 结果填充
         return getHistoryPageResult(request, count, historicTasks);
     }

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(value = "workflow-engine", path = "task")
 public interface ActTaskService {
 
-    @ApiOperation("查询待办任务")
+    @ApiOperation("分页查询待办任务")
     @PostMapping("todoList")
     Response<PageResult<Task>> todoList(@RequestBody @Validated @ApiParam(value = "待办任务查询参数", required = true)
                                           ToDoTaskRequest request);
