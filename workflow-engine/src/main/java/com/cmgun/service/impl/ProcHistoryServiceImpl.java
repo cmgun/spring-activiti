@@ -3,8 +3,10 @@ package com.cmgun.service.impl;
 import com.cmgun.api.common.PageResult;
 import com.cmgun.api.model.History;
 import com.cmgun.api.model.HistoryQueryRequest;
+import com.cmgun.mapper.ActHistoryMapper;
 import com.cmgun.service.ProcHistoryService;
 import com.cmgun.utils.ExceptionUtil;
+import com.cmgun.utils.PageUtil;
 import com.cmgun.utils.TaskUtil;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -34,37 +36,52 @@ public class ProcHistoryServiceImpl implements ProcHistoryService {
     private HistoryService historyService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private ActHistoryMapper actHistoryMapper;
 
     @Override
     public PageResult<History> queryHistory(HistoryQueryRequest request) {
         // 任务候选组，非空时忽略其他查询条件
-        if (StringUtils.isNotBlank(request.getAssignee())) {
-            // 根据任务候选组查询，重写查询语句 TODO 直接返回结果
+        if (request.getCandidateGroup() != null) {
+            // 根据任务候选组查询，重写查询语句
+            return queryHistoryByCandidateGroup(request);
         }
         // 其余情况
         HistoricTaskInstanceQuery query = getHistoryQuery(request);
         // 总数
         long count = query.count();
-        // 分页查询
-        List<HistoricTaskInstance> historicTasks = query.listPage(request.getStartRow(), request.getPageSize());
-        if (CollectionUtils.isEmpty(historicTasks)) {
+        if (PageUtil.isOutOfRange(count, request)) {
             return PageResult.empty(request, count);
         }
+        // 分页查询
+        List<HistoricTaskInstance> historicTasks = query.listPage(request.getStartRow(), request.getPageSize());
         // 结果填充
-        List<History> result = Lists.newArrayList();
-        for (HistoricTaskInstance historicTaskInstance : historicTasks) {
-            History history = getHistory(historicTaskInstance);
-            if (history != null) {
-                result.add(history);
-            }
-        }
-        return PageResult.result(request, count, result);
+        return getHistoryPageResult(request, count, historicTasks);
     }
 
+    @Override
+    public PageResult<History> queryHistoryByCandidateGroup(HistoryQueryRequest request) {
+        long count = actHistoryMapper.countByCandidateGroup(request.getCategory(), request.getCandidateGroup());
+        if (PageUtil.isOutOfRange(count, request)) {
+            return PageResult.empty(request, count);
+        }
+        // 分页查询
+        List<HistoricTaskInstance> historicTasks = actHistoryMapper.queryByCandidateGroup(request.getCategory()
+                , request.getCandidateGroup(), request.getStartRow(), request.getPageSize());
+        // 结果填充
+        return getHistoryPageResult(request, count, historicTasks);
+    }
+
+    /**
+     * 封装历史任务查询条件
+     *
+     * @param request 参数
+     * @return 查询条件
+     */
     private HistoricTaskInstanceQuery getHistoryQuery(HistoryQueryRequest request) {
         // 任务用户信息不能全为空
         ExceptionUtil.businessException(request.getAssignee() == null && request.getCandidateUser() == null
-                , "用户组或用户查询条件不能都为空");
+                , "用户查询条件不能都为空");
         // 按任务结束时间倒序查询
         HistoricTaskInstanceQuery historyQuery = historyService.createHistoricTaskInstanceQuery()
                 .taskCategory(request.getCategory())
@@ -90,12 +107,36 @@ public class ProcHistoryServiceImpl implements ProcHistoryService {
     }
 
     /**
+     * 填充查询分页结果
+     *
+     * @param request 分页请求
+     * @param count 总数
+     * @param historicTasks 分页原始数据
+     * @return 分页结果
+     */
+    private PageResult<History> getHistoryPageResult(HistoryQueryRequest request, long count
+            , List<HistoricTaskInstance> historicTasks) {
+        List<History> result = Lists.newArrayList();
+        for (HistoricTaskInstance historicTaskInstance : historicTasks) {
+            History history = getHistory(historicTaskInstance);
+            if (history != null) {
+                result.add(history);
+            }
+        }
+        return PageResult.result(request, count, result);
+    }
+
+    /**
      * 获取历史任务信息
      *
      * @param historicTaskInstance 历史任务原生实例
      * @return 历史任务信息
      */
     private History getHistory(HistoricTaskInstance historicTaskInstance) {
+        if (historicTaskInstance.getProcessInstanceId() == null) {
+            log.warn("流程实例不存在，任务id:{}", historicTaskInstance.getId());
+            return null;
+        }
         // 对应流程
         List<HistoricProcessInstance> processList = historyService.createHistoricProcessInstanceQuery()
                 .processInstanceId(historicTaskInstance.getProcessInstanceId())

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmgun.mapper.ActHistoryMapper">
+
+    <resultMap id="HistoricTaskInstance" type="org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntityImpl">
+        <result column="ID_" property="id" />
+        <result column="PROC_DEF_ID_" property="processDefinitionId" />
+        <result column="TASK_DEF_KEY_" property="taskDefinitionKey" />
+        <result column="PROC_INST_ID_" property="processInstanceId" />
+        <result column="EXECUTION_ID_" property="executionId" />
+        <result column="NAME_" property="name" />
+        <result column="PARENT_TASK_ID_" property="parentTaskId" />
+        <result column="DESCRIPTION_" property="description" />
+        <result column="OWNER_" property="owner" />
+        <result column="ASSIGNEE_" property="assignee" />
+        <result column="START_TIME_" property="startTime" />
+        <result column="CLAIM_TIME_" property="claimTime" />
+        <result column="END_TIME_" property="endTime" />
+        <result column="DURATION_" property="durationInMillis" />
+        <result column="DELETE_REASON_" property="deleteReason" />
+        <result column="PRIORITY_" property="priority" />
+        <result column="DUE_DATE_" property="dueDate" />
+        <result column="FORM_KEY_" property="formKey" />
+        <result column="CATEGORY_" property="category" />
+        <result column="TENANT_ID_" property="tenantId" />
+    </resultMap>
+
+    <select id="queryByCandidateGroup" resultMap="HistoricTaskInstance">
+        SELECT DISTINCT
+        RES.*
+        <include refid="queryByCandidateGroupSql"/>
+        LIMIT ${pageSize} OFFSET ${firstRow}
+    </select>
+
+    <select id="countByCandidateGroup" resultType="java.lang.Long">
+        SELECT count(1)
+        <include refid="queryByCandidateGroupSql"/>
+    </select>
+
+    <sql id="queryByCandidateGroupSql">
+        FROM
+        ACT_HI_TASKINST RES
+        INNER JOIN ACT_HI_IDENTITYLINK HI ON HI.TASK_ID_ = RES.ID_
+        WHERE
+        RES.END_TIME_ IS NOT NULL
+        AND RES.CATEGORY_ = #{category}
+        AND HI.TYPE_ = 'candidate'
+        AND (HI.GROUP_ID_ IN(#{groupId}))
+        ORDER BY
+        RES.END_TIME_ DESC
+    </sql>
+</mapper>
