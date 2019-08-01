@@ -22,6 +22,11 @@ public class TaskUtil {
      * 任务参与组
      */
     public final static String CANDIDATE_GROUPS = "candidateGroups";
+
+    /**
+     * 任务参与用户
+     */
+    public final static String CANDIDATE_USERS = "candidateUsers";
     /**
      * 流程业务数据，贯穿整个流程生命周期
      */
@@ -38,6 +43,10 @@ public class TaskUtil {
      * 任务审批结果
      */
     public final static String RESULT = "result";
+    /**
+     * 当前任务节点的本地变量
+     */
+    public final static String LOCAL_DATA = "localData";
 
 
     /**
@@ -65,6 +74,7 @@ public class TaskUtil {
         Map<String, Object> localContext = new HashMap<>();
         localContext.put(RESULT, request.getAuditResult());
         localContext.put(AUDITOR_NAME, request.getAuditorName());
+        localContext.put(LOCAL_DATA, request.getTaskContext().getLocalPayload());
         return localContext;
     }
 
