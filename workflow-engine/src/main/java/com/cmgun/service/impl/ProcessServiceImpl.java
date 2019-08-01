@@ -1,7 +1,5 @@
 package com.cmgun.service.impl;
 
-//import com.cmgun.command.BaseTaskCommand;
-
 import com.cmgun.api.common.TaskContext;
 import com.cmgun.api.model.Process;
 import com.cmgun.api.model.ProcessStartRequest;
@@ -71,6 +69,9 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Process startProcess(ProcessStartRequest request) {
+        // 流程是否存在
+        ExceptionUtil.businessException(!existsProcessDefinition(request),
+                String.format("流程定义不存在，无法开启流程，流程id:%s，类别:%s", request.getProcessDefinitionKey(), request.getCategory()));
         TaskContext taskContext = request.getTaskContext();
         Map<String, Object> context = new HashMap<>();
         // 初始化流程上下文
@@ -88,6 +89,21 @@ public class ProcessServiceImpl implements ProcessService {
                 .id(processInstance.getId())
                 .processDefinitionKey(processInstance.getProcessDefinitionKey())
                 .businessKey(processInstance.getBusinessKey())
+                .name(processInstance.getName())
                 .build();
+    }
+
+    /**
+     * 流程定义是否存在
+     *
+     * @param request 请求参数
+     * @return true：存在 / false：不存在
+     */
+    private boolean existsProcessDefinition(ProcessStartRequest request) {
+        long count = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionKey(request.getProcessDefinitionKey())
+                .processDefinitionCategory(request.getCategory())
+                .count();
+        return count > 0;
     }
 }

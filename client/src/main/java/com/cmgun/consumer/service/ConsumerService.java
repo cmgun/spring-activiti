@@ -22,6 +22,16 @@ public class ConsumerService {
     @Autowired
     private ActTaskService actTaskService;
 
+
+    public void saveMsg(String msg) {
+        // 添加一条记录
+        BaseMsg baseMsg = new BaseMsg();
+        baseMsg.setMsg(msg);
+        baseMsg.setState(0);
+        // 本地事务
+        baseMsgService.save(baseMsg);
+    }
+
     @Transactional
     public Response audit(TaskAuditRequest request) {
         // 添加一条记录

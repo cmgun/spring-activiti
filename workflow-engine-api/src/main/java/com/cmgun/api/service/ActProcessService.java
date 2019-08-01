@@ -3,6 +3,8 @@ package com.cmgun.api.service;
 import com.cmgun.api.common.Response;
 import com.cmgun.api.model.Process;
 import com.cmgun.api.model.ProcessStartRequest;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -26,12 +28,19 @@ import java.io.IOException;
 public interface ActProcessService {
 
     @ApiOperation("流程发布")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "processName", value = "部署名称", paramType = "query"),
+            @ApiImplicitParam(name = "key", value = "部署key", paramType = "query"),
+            @ApiImplicitParam(name = "source", value = "业务来源", paramType = "query"),
+            @ApiImplicitParam(name = "category", value = "部署类别", paramType = "query"),
+            @ApiImplicitParam(name = "file", value = "流程文件", paramType = "query", dataTypeClass = MultipartFile.class)
+    })
     @PostMapping(value = "deploy", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    Response<Process> deploy(@ApiParam(value = "流程名称") @RequestParam(value = "processName") String processName
-            , @ApiParam(value = "流程key") @RequestParam(value = "key") String key
-            , @ApiParam(value = "业务来源") @RequestParam(value = "source") String source
-            , @ApiParam(value = "流程类别") @RequestParam(value = "category") String category
-            , @ApiParam(value = "流程文件") @RequestPart("file") MultipartFile file) throws IOException;
+    Response<Process> deploy(@RequestParam(value = "processName") String processName
+            , @RequestParam(value = "key") String key
+            , @RequestParam(value = "source") String source
+            , @RequestParam(value = "category") String category
+            , @RequestPart("file") MultipartFile file) throws IOException;
 
     @ApiOperation("流程开启")
     @PostMapping("start")

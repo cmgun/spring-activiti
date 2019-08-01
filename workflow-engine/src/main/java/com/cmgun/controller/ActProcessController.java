@@ -49,7 +49,7 @@ public class ActProcessController implements ActProcessService {
                 , "非bpmn流程文件");
         DeployDTO deployDTO = DeployDTO.builder()
                 .processName(processName)
-                .key( source.concat("-").concat(key))
+                .key(source.concat("-").concat(key))
                 .category(category)
                 .file(file)
                 .build();

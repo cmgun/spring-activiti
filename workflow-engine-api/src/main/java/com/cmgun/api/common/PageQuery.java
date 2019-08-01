@@ -29,7 +29,7 @@ public class PageQuery implements Serializable {
     private int pageNo;
 
     @ApiModelProperty(value = "是否忽略分页条件查询全部", notes = "如果该字段为true，返回全部符合条件的记录")
-    private Boolean queryAll;
+    private Boolean queryAll = false;
 
     /**
      * 获取分页开始的行数

@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -29,8 +30,12 @@ public class ProcessStartRequest extends Request {
     private String processDefinitionKey;
 
     @NotNull(message = "流程的业务id不能为空")
-    @ApiModelProperty("流程的业务id，命名规则：业务模块标志:业务id")
+    @ApiModelProperty("流程的业务id，业务系统保证唯一性")
     private String businessKey;
+
+    @NotBlank(message = "流程类型不能为空")
+    @ApiModelProperty("流程类型，process标签的namespace")
+    private String category;
 
     @NotNull(message = "流程上下文不能为空")
     @ApiModelProperty("流程上下文，包含必要的业务数据")

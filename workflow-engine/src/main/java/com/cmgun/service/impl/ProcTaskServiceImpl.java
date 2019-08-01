@@ -59,9 +59,9 @@ public class ProcTaskServiceImpl implements ProcTaskService {
                     .category(rawTask.getCategory());
             // 流程变量
             Map<String, Object> variables = taskService.getVariables(rawTask.getId());
-            if (variables != null) {
-                builder.data(variables.get(TaskUtil.PROCESS_DATA));
-            }
+            builder.data(TaskUtil.getProcessData(variables));
+            // 封装上个任务审批结果
+            TaskUtil.parseLastTaskAuditInfo(builder, variables);
             // 流程实例
             List<ProcessInstance> processInstances = runtimeService.createProcessInstanceQuery()
                     .processInstanceId(rawTask.getProcessInstanceId())
@@ -131,7 +131,7 @@ public class ProcTaskServiceImpl implements ProcTaskService {
         Map<String, Object> globalContext = taskService.getVariables(taskId);
         TaskUtil.globalTaskContext(globalContext, request.getTaskContext());
         taskService.setVariables(taskId, globalContext);
-
+        // 下个任务节点上下文
         Map<String, Object> localContext = TaskUtil.auditTaskLocalContext(request);
         taskService.setVariablesLocal(taskId, localContext);
         // 当前用户签收任务

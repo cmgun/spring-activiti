@@ -2,7 +2,9 @@ package com.cmgun.utils;
 
 import com.cmgun.api.common.TaskContext;
 import com.cmgun.api.model.Comment;
+import com.cmgun.api.model.Task;
 import com.cmgun.api.model.TaskAuditRequest;
+import com.cmgun.entity.dto.AuditDTO;
 import com.google.common.collect.Lists;
 import org.activiti.engine.history.HistoricVariableInstance;
 
@@ -32,14 +34,6 @@ public class TaskUtil {
      */
     public final static String PROCESS_DATA = "data";
     /**
-     * 任务上下文，审批用户名称
-     */
-    public final static String AUDITOR_NAME = "auditorName";
-    /**
-     * 任务审批用户id
-     */
-    public final static String AUDITOR = "auditor";
-    /**
      * 任务审批结果
      */
     public final static String RESULT = "result";
@@ -47,10 +41,13 @@ public class TaskUtil {
      * 当前任务节点的本地变量
      */
     public final static String LOCAL_DATA = "localData";
-
+    /**
+     * 审批信息
+     */
+    public final static String AUDIT_INFO = "auditInfo";
 
     /**
-     * 初始化下一个任务节点的上下文
+     * 流程上下文填充
      *
      * @param context 下一个任务的上下文
      * @param taskContext 请求参数
@@ -71,9 +68,15 @@ public class TaskUtil {
      * @return 本地上下文
      */
     public static Map<String, Object> auditTaskLocalContext(TaskAuditRequest request) {
+        AuditDTO auditDTO = AuditDTO.builder()
+                .auditor(request.getAuditor())
+                .auditorName(request.getAuditorName())
+                .auditResult(request.getAuditResult())
+                .comment(request.getComment())
+                .build();
         Map<String, Object> localContext = new HashMap<>();
+        localContext.put(AUDIT_INFO, auditDTO);
         localContext.put(RESULT, request.getAuditResult());
-        localContext.put(AUDITOR_NAME, request.getAuditorName());
         localContext.put(LOCAL_DATA, request.getTaskContext().getLocalPayload());
         return localContext;
     }
@@ -86,8 +89,9 @@ public class TaskUtil {
      */
     public static Object getTaskAuditResult(List<HistoricVariableInstance> localVariables) {
         for (HistoricVariableInstance variable : localVariables) {
-            if (RESULT.equals(variable.getVariableName())) {
-                return variable.getValue();
+            if (AUDIT_INFO.equals(variable.getVariableName())) {
+                AuditDTO auditDTO = (AuditDTO) variable.getValue();
+                return auditDTO.getAuditResult();
             }
         }
         return null;
@@ -109,6 +113,19 @@ public class TaskUtil {
     }
 
     /**
+     * 从流程变量中获取业务数据
+     *
+     * @param variables 流程变量
+     * @return 业务数据
+     */
+    public static Object getProcessData(Map<String, Object> variables) {
+        if (variables != null) {
+            return variables.get(PROCESS_DATA);
+        }
+        return null;
+    }
+
+    /**
      * 获取任务审批备注记录
      *
      * @param rawComments 原始审批备注
@@ -124,5 +141,22 @@ public class TaskUtil {
             comments.add(comment);
         }
         return comments;
+    }
+
+    /**
+     * 封装上个任务的审批信息
+     *
+     * @param builder builder
+     * @param localVariables 本地变量
+     */
+    public static void parseLastTaskAuditInfo(Task.TaskBuilder builder, Map<String, Object> localVariables) {
+        if (localVariables == null || !localVariables.containsKey(AUDIT_INFO)) {
+            return;
+        }
+        AuditDTO auditDTO = (AuditDTO) localVariables.get(AUDIT_INFO);
+        builder.auditResult(auditDTO.getAuditResult())
+                .auditor(auditDTO.getAuditor())
+                .auditorName(auditDTO.getAuditorName())
+                .comment(auditDTO.getComment());
     }
 }

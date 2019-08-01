@@ -36,6 +36,6 @@ public class Process implements Serializable {
     private String name;
 
     @ApiModelProperty("部署时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date deploymentTime;
 }

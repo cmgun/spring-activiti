@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,10 +43,22 @@ public class Task implements Serializable {
     private Object data;
 
     @ApiModelProperty("创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     @ApiModelProperty("到期时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date dueDate;
+
+    @ApiModelProperty("上一个任务审批人id")
+    private String auditor;
+
+    @ApiModelProperty("上一个任务审批人名称")
+    private String auditorName;
+
+    @ApiModelProperty("上一个任务审批结果")
+    private Object auditResult;
+
+    @ApiModelProperty("上一个任务审批意见")
+    private String comment;
 }

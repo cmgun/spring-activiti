@@ -39,7 +39,7 @@ public class History implements Serializable {
     private Object auditResult;
 
     @ApiModelProperty("审批时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date auditTime;
 
     @ApiModelProperty("审批备注")

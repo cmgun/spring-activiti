@@ -1,6 +1,7 @@
 package com.cmgun.consumer.controller;
 
 import com.cmgun.api.common.Response;
+import com.cmgun.api.enums.SourceEnum;
 import com.cmgun.api.model.HistoryQueryRequest;
 import com.cmgun.api.model.ProcessStartRequest;
 import com.cmgun.api.model.TaskAuditRequest;
@@ -30,7 +31,7 @@ public class ConsumerController {
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
-    private ActProcessService actProcessNameService;
+    private ActProcessService actProcessService;
     @Autowired
     private ActTaskService actTaskService;
     @Autowired
@@ -46,13 +47,16 @@ public class ConsumerController {
         }
         // 文件存在，生成multipartFile
         MultipartFile multipartFile = FileUtils.createMultipartFile("file", resource);
-        Response response = actProcessNameService.deploy(processName, processName + "-key", "1", "TestCategory", multipartFile);
+        Response response = actProcessService.deploy(processName, processName + "-key", SourceEnum.INVOICE_LOAN.getCode()
+                , "01-loanApply", multipartFile);
         return response;
     }
 
     @PostMapping("start")
     public Response start(@RequestBody ProcessStartRequest request) {
-        Response response = actProcessNameService.start(request);
+        // 保存业务数据，msg作为业务key
+        consumerService.saveMsg(request.getBusinessKey());
+        Response response = actProcessService.start(request);
         return response;
     }
 
