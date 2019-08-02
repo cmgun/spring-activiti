@@ -13,6 +13,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 自动扫描BPMN流程文件，自动部署
  *
@@ -39,15 +43,24 @@ public class BPMNScanner implements CommandLineRunner {
     /**
      * 自动扫描路径
      */
-    @Value("${workflow.autoScanner.path:classpath:/processes/**}")
+    @Value("${workflow.autoScanner.path:classpath:/processes/}")
     private String scannerPath;
+
+    /**
+     * 合法的BPMN文件后缀
+     */
+    private List<String> processDefinitionLocationSuffixes = Arrays.asList("**.bpmn20.xml", "**.bpmn");
 
     @Override
     public void run(String... args) throws Exception {
         if (autoScanner && scannerPath != null) {
-            // 扫描指定路径
-            Resource[] resources = applicationContext.getResources(scannerPath);
-            log.info("自动扫描BPMN文件，资源数量:" + resources.length);
+            List<Resource> resources = new ArrayList<>();
+            for (String suffixe : processDefinitionLocationSuffixes) {
+                // 扫描指定路径
+                Resource[] res = applicationContext.getResources(scannerPath + suffixe);
+                resources.addAll(Arrays.asList(res));
+            }
+            log.info("自动扫描BPMN文件，资源数量:" + resources.size());
             for (Resource resource : resources) {
                 // 读取文件流
                 MultipartFile multipartFile = FileUtils.createMultipartFile("file", resource);
