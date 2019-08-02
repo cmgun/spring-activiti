@@ -47,6 +47,8 @@ public class ProcessServiceImpl implements ProcessService {
                 .key(deployDTO.getKey())
                 .category(deployDTO.getCategory())
                 .addInputStream(file.getOriginalFilename(), file.getInputStream())
+                // 重复过滤，不部署重复的流程，会与最新版本的部署比较
+                .enableDuplicateFiltering()
                 .deploy();
         ExceptionUtil.businessException(deployment == null, "部署失败");
         log.info("部署流程结束, name:{}, key:{}, category:{}, id:{}", deployDTO.getProcessName()

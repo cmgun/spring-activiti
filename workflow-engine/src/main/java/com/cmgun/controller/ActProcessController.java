@@ -25,7 +25,7 @@ import java.io.IOException;
  * @author chenqilin
  * @Date 2019/7/16
  */
-@Api
+@Api(tags = "process")
 @Slf4j
 @RestController
 @RequestMapping("process")

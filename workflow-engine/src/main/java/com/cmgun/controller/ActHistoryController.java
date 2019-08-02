@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author chenqilin
  * @Date 2019/7/29
  */
-@Api
+@Api(tags = "history")
 @Slf4j
 @RestController
 @RequestMapping("history")
