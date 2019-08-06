@@ -37,6 +37,11 @@ public class Response<T> {
     public static final Long REPEAT_REQUEST = 402L;
 
     /**
+     * 业务重复处理
+     */
+    public static final Long REPEAT_BUSINESS = 403L;
+
+    /**
      * 系统异常
      */
     public static final Long ERROR = 500L;
