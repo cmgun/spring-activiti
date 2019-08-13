@@ -2,7 +2,9 @@ package com.cmgun.api.service;
 
 import com.cmgun.api.common.Response;
 import com.cmgun.api.model.Process;
+import com.cmgun.api.model.ProcessActiveTaskRequest;
 import com.cmgun.api.model.ProcessStartRequest;
+import com.cmgun.api.model.Task;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 流程管理
@@ -45,4 +48,8 @@ public interface ActProcessService {
     @ApiOperation("流程开启")
     @PostMapping("start")
     Response<Process> start(@RequestBody @Validated @ApiParam(value = "流程开启参数", required = true) ProcessStartRequest request);
+
+    @ApiOperation("某个流程当前激活的任务")
+    @PostMapping("queryActiveTasks")
+    Response<List<Task>> processActiveTasks(@RequestBody @Validated @ApiParam(value = "查询条件", required = true) ProcessActiveTaskRequest request);
 }

@@ -1,13 +1,16 @@
 package com.cmgun.controller;
 
 import com.cmgun.api.common.Response;
+import com.cmgun.api.model.ProcessActiveTaskRequest;
 import com.cmgun.api.model.ProcessStartRequest;
+import com.cmgun.api.model.Task;
 import com.cmgun.api.service.ActProcessService;
 import com.cmgun.config.annotation.DuplicateValidation;
 import com.cmgun.config.annotation.RequestPersistence;
 import com.cmgun.entity.dto.DeployDTO;
 import com.cmgun.entity.enums.BusiTypeEnum;
 import com.cmgun.api.model.Process;
+import com.cmgun.service.ProcTaskService;
 import com.cmgun.service.ProcessService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 流程管理
@@ -33,6 +37,8 @@ public class ActProcessController implements ActProcessService {
 
     @Autowired
     private ProcessService processService;
+    @Autowired
+    private ProcTaskService procTaskService;
 
     @Override
     public Response<Process> deploy(String processName, String key, String source
@@ -63,5 +69,11 @@ public class ActProcessController implements ActProcessService {
     public Response<Process> start(ProcessStartRequest request) {
         Process processVO = processService.startProcess(request);
         return Response.success("流程启动成功", processVO);
+    }
+
+    @Override
+    public Response<List<Task>> processActiveTasks(ProcessActiveTaskRequest request) {
+        List<Task> tasks = procTaskService.queryActiveTaskByProcess(request);
+        return Response.success("查询成功", tasks);
     }
 }

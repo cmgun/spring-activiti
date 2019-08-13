@@ -1,6 +1,7 @@
 package com.cmgun.service.impl;
 
 import com.cmgun.api.common.PageResult;
+import com.cmgun.api.model.ProcessActiveTaskRequest;
 import com.cmgun.api.model.Task;
 import com.cmgun.api.model.TaskAuditRequest;
 import com.cmgun.api.model.ToDoTaskRequest;
@@ -142,5 +143,30 @@ public class ProcTaskServiceImpl implements ProcTaskService {
         busiRequestService.updateSuccessReq(request);
     }
 
+    @Override
+    public List<Task> queryActiveTaskByProcess(ProcessActiveTaskRequest request) {
+        TaskQuery query = taskService.createTaskQuery()
+                .processInstanceBusinessKey(request.getBusinessKey())
+                .taskCategory(request.getCategory())
+                .active();
+        List<org.activiti.engine.task.Task> rawTasks = query.list();
+        if (CollectionUtils.isEmpty(rawTasks)) {
+            return Lists.newArrayList();
+        }
 
+        // 封装查询结果
+        List<Task> tasks = Lists.newArrayList();
+        for (org.activiti.engine.task.Task rawTask : rawTasks) {
+            Task task = Task.builder()
+                    .taskId(rawTask.getId())
+                    .dueDate(rawTask.getDueDate())
+                    .createTime(rawTask.getCreateTime())
+                    .processDefinitionId(rawTask.getProcessDefinitionId())
+                    .category(rawTask.getCategory())
+                    .businessKey(request.getBusinessKey())
+                    .build();
+            tasks.add(task);
+        }
+        return tasks;
+    }
 }

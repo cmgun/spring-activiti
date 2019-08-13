@@ -1,6 +1,7 @@
 package com.cmgun.service;
 
 import com.cmgun.api.common.PageResult;
+import com.cmgun.api.model.ProcessActiveTaskRequest;
 import com.cmgun.api.model.Task;
 import com.cmgun.api.model.TaskAuditRequest;
 import com.cmgun.api.model.ToDoTaskRequest;
@@ -31,4 +32,11 @@ public interface ProcTaskService {
      * @param taskAuditRequest 参数
      */
     void audit(TaskAuditRequest taskAuditRequest);
+
+    /**
+     * 查询流程当前激活的任务列表
+     * @param request 查询参数
+     * @return 任务列表
+     */
+    List<Task> queryActiveTaskByProcess(ProcessActiveTaskRequest request);
 }
