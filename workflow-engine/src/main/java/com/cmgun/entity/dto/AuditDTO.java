@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 /**
  * @author chenqilin
- * @Date 2019/8/1
+ * @date 2019/8/1
  */
 @Data
 @Builder

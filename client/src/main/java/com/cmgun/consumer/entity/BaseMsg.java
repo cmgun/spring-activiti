@@ -9,7 +9,7 @@ import java.util.Date;
  * 业务数据
  *
  * @author chenqilin
- * @Date 2019/7/25
+ * @date 2019/7/25
  */
 @Data
 @TableName("base_msg")

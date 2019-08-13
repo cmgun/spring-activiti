@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author chenqilin
- * @Date 2019/7/16
+ * @date 2019/7/16
  */
 @RestController
 @RequestMapping("consumer")

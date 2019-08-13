@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author chenqilin
- * @Date 2019/7/23
+ * @date 2019/7/23
  */
 @Data
 @Builder

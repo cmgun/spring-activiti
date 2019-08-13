@@ -5,7 +5,7 @@ import com.cmgun.consumer.entity.BaseMsg;
 
 /**
  * @author chenqilin
- * @Date 2019/7/25
+ * @date 2019/7/25
  */
 public interface BaseMsgService extends IService<BaseMsg> {
 }

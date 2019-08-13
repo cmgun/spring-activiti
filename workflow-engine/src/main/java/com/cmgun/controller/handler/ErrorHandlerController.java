@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
  * 统一异常处理
  *
  * @author chenqilin
- * @Date 2019/7/17
+ * @date 2019/7/17
  */
 @Slf4j
 @ControllerAdvice

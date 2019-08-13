@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author chenqilin
- * @Date 2019/7/25
+ * @date 2019/7/25
  */
 @Service
 public class BaseMsgServiceImpl extends ServiceImpl<BaseMsgMapper, BaseMsg> implements BaseMsgService {

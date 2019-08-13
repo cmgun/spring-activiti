@@ -4,7 +4,7 @@ package com.cmgun.config.aspect.exception;
  * 重复请求异常
  *
  * @author chenqilin
- * @Date 2019/7/18
+ * @date 2019/7/18
  */
 public class DuplicateRequestException extends RuntimeException {
 

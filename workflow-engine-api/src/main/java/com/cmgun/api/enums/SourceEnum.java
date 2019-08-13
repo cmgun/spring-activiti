@@ -4,7 +4,7 @@ package com.cmgun.api.enums;
  * 请求来源枚举类
  *
  * @author chenqilin
- * @Date 2019/8/1
+ * @date 2019/8/1
  */
 public enum SourceEnum {
 

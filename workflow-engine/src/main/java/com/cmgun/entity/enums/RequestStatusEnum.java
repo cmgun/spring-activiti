@@ -6,7 +6,7 @@ import lombok.Getter;
  * 请求处理状态
  *
  * @author chenqilin
- * @Date 2019/7/22
+ * @date 2019/7/22
  */
 @Getter
 public enum RequestStatusEnum {

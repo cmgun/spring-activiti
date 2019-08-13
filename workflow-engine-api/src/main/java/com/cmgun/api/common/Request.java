@@ -11,7 +11,7 @@ import java.io.Serializable;
  * 通用请求体
  *
  * @author chenqilin
- * @Date 2019/7/16
+ * @date 2019/7/16
  */
 @Data
 public class Request implements Serializable {

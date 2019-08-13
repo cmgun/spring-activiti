@@ -15,7 +15,7 @@ import java.util.Map;
  * 任务信息
  *
  * @author chenqilin
- * @Date 2019/7/17
+ * @date 2019/7/17
  */
 @Data
 @Builder

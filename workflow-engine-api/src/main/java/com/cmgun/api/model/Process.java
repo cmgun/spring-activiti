@@ -12,7 +12,7 @@ import java.util.Date;
  * 流程信息实体
  *
  * @author chenqilin
- * @Date 2019/7/17
+ * @date 2019/7/17
  */
 @Data
 @Builder

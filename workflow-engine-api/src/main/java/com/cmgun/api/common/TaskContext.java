@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
  * 流程任务上下文
  *
  * @author chenqilin
- * @Date 2019/7/19
+ * @date 2019/7/19
  */
 @Data
 @ApiModel("流程任务上下文")

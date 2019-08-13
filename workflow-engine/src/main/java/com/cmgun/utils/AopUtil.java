@@ -7,7 +7,7 @@ import org.aspectj.lang.JoinPoint;
  * AOP工具类
  *
  * @author chenqilin
- * @Date 2019/7/22
+ * @date 2019/7/22
  */
 public class AopUtil {
 

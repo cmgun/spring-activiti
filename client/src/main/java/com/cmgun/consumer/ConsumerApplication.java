@@ -8,7 +8,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * @author chenqilin
- * @Date 2019/7/16
+ * @date 2019/7/16
  */
 @SpringBootApplication
 @EnableFeignClients(basePackages = "com.cmgun.api")

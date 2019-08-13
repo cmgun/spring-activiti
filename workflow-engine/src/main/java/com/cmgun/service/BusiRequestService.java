@@ -8,7 +8,7 @@ import com.cmgun.entity.BusiRequest;
  * 业务请求记录
  *
  * @author chenqilin
- * @Date 2019/7/22
+ * @date 2019/7/22
  */
 public interface BusiRequestService extends IService<BusiRequest> {
 

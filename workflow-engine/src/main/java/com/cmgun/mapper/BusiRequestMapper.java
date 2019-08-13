@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Update;
  * 业务请求流水记录Mapper
  *
  * @author chenqilin
- * @Date 2019/7/22
+ * @date 2019/7/22
  */
 @Mapper
 public interface BusiRequestMapper extends BaseMapper<BusiRequest> {

@@ -8,7 +8,7 @@ import com.cmgun.api.model.HistoryQueryRequest;
  * 流程历史管理
  *
  * @author chenqilin
- * @Date 2019/7/29
+ * @date 2019/7/29
  */
 public interface ProcHistoryService {
 

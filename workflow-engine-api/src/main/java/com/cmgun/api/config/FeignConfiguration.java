@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * Feign配置
  *
  * @author chenqilin
- * @Date 2019/7/17
+ * @date 2019/7/17
  */
 @Configuration
 public class FeignConfiguration {

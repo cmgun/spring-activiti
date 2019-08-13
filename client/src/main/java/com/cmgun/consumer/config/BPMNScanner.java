@@ -21,7 +21,7 @@ import java.util.List;
  * 自动扫描BPMN流程文件，自动部署
  *
  * @author chenqilin
- * @Date 2019/7/16
+ * @date 2019/7/16
  */
 @Slf4j
 @Component

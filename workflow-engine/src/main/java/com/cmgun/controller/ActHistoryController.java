@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 历史任务管理
  *
  * @author chenqilin
- * @Date 2019/7/29
+ * @date 2019/7/29
  */
 @Api(tags = "history")
 @Slf4j

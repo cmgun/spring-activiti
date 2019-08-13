@@ -9,7 +9,7 @@ import lombok.Data;
  * 通用响应体
  *
  * @author chenqilin
- * @Date 2019/7/16
+ * @date 2019/7/16
  */
 @Data
 @Builder

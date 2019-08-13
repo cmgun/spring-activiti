@@ -18,7 +18,7 @@ import java.io.OutputStream;
  * 文件处理工具类
  *
  * @author chenqilin
- * @Date 2019/7/17
+ * @date 2019/7/17
  */
 @Slf4j
 public class FileUtils {

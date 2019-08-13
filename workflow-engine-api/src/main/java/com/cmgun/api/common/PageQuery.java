@@ -11,7 +11,7 @@ import java.io.Serializable;
  * 分页查询请求
  *
  * @author chenqilin
- * @Date 2019/7/29
+ * @date 2019/7/29
  */
 @Data
 public class PageQuery implements Serializable {
