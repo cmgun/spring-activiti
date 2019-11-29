@@ -74,6 +74,14 @@ public class ProcessServiceImpl implements ProcessService {
         // 流程是否存在
         ExceptionUtil.businessException(!existsProcessDefinition(request),
                 String.format("流程定义不存在，无法开启流程，流程id:%s，类别:%s", request.getProcessDefinitionKey(), request.getCategory()));
+        // 当前是否有同样businessKey的相同流程在运行中
+        long sameActiveProcess = runtimeService.createProcessInstanceQuery()
+            .processInstanceBusinessKey(request.getBusinessKey())
+            .processDefinitionId(request.getProcessDefinitionKey())
+            .active()
+            .count();
+        ExceptionUtil.businessRepeatException(sameActiveProcess > 0, "当前已有相同流程开启");
+
         TaskContext taskContext = request.getTaskContext();
         Map<String, Object> context = new HashMap<>();
         // 初始化流程上下文
@@ -107,5 +115,11 @@ public class ProcessServiceImpl implements ProcessService {
                 .processDefinitionCategory(request.getCategory())
                 .count();
         return count > 0;
+    }
+
+    @Override
+    public void endProcess(String processInstanceId, String reason) {
+        // 流程实例删除
+        runtimeService.deleteProcessInstance(processInstanceId, reason);
     }
 }

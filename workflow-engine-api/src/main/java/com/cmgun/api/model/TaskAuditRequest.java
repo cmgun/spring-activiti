@@ -1,5 +1,6 @@
 package com.cmgun.api.model;
 
+
 import com.cmgun.api.common.Request;
 import com.cmgun.api.common.TaskContext;
 import io.swagger.annotations.ApiModel;
@@ -9,6 +10,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * 任务审批请求
@@ -30,7 +32,7 @@ public class TaskAuditRequest extends Request {
 
     @NotNull(message = "任务候选组不能为空")
     @ApiModelProperty("任务候选组")
-    private String candidateGroup;
+    private List<String> candidateGroup;
 
     @NotNull(message = "任务审批人id不能为空")
     @ApiModelProperty("任务审批人id")

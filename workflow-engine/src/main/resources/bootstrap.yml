@@ -1,0 +1,31 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: workflow-engine
+  profiles:
+    active: local
+  cloud:
+    config:
+      discovery:
+        service-id: eureka-config
+        enabled: false
+      fail-fast: true
+      profile: ${spring.profiles.active}
+  activiti:
+    # 不自动扫描部署
+    check-process-definitions: false
+    # 历史记录级别
+    history-level: audit
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+    hostname: ${spring.application.name}
+    prefer-ip-address: true
+    metadata-map:
+      cluster: MAIN
+  client:
+    serviceUrl:
+      defaultZone: http://admin:admin@peer1:8761/eureka/,http://admin:admin@peer2:8761/eureka/

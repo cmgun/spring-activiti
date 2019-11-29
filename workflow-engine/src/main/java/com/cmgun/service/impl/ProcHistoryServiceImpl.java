@@ -1,22 +1,28 @@
 package com.cmgun.service.impl;
 
+import com.google.common.collect.Lists;
 import com.cmgun.api.common.PageResult;
 import com.cmgun.api.model.History;
 import com.cmgun.api.model.HistoryQueryRequest;
+import com.cmgun.entity.dto.AuditDTO;
 import com.cmgun.mapper.ActHistoryMapper;
 import com.cmgun.service.ProcHistoryService;
 import com.cmgun.utils.ExceptionUtil;
 import com.cmgun.utils.PageUtil;
 import com.cmgun.utils.TaskUtil;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.RepositoryService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.history.*;
+import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.history.HistoricTaskInstanceQuery;
+import org.activiti.engine.history.HistoricVariableInstance;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Comment;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +39,8 @@ import java.util.List;
 public class ProcHistoryServiceImpl implements ProcHistoryService {
 
     @Autowired
+    private RepositoryService repositoryService;
+    @Autowired
     private HistoryService historyService;
     @Autowired
     private TaskService taskService;
@@ -42,7 +50,7 @@ public class ProcHistoryServiceImpl implements ProcHistoryService {
     @Override
     public PageResult<History> queryHistory(HistoryQueryRequest request) {
         // 任务候选组，非空时忽略其他查询条件
-        if (request.getCandidateGroup() != null) {
+        if (CollectionUtils.isNotEmpty(request.getCandidateGroup())) {
             // 根据任务候选组查询，重写查询语句
             return queryHistoryByCandidateGroup(request);
         }
@@ -58,14 +66,23 @@ public class ProcHistoryServiceImpl implements ProcHistoryService {
 
     @Override
     public PageResult<History> queryHistoryByCandidateGroup(HistoryQueryRequest request) {
-        long count = actHistoryMapper.countByCandidateGroup(request);
-        if (PageUtil.isOutOfRange(count, request)) {
-            return PageResult.empty(request, count);
+        boolean needPageQuery = BooleanUtils.isNotTrue(request.getQueryAll());
+        long count;
+        List<HistoricTaskInstance> historicTasks = Lists.newArrayList();
+        if (needPageQuery) {
+            count = actHistoryMapper.countByCandidateGroup(request);
+            if (PageUtil.isOutOfRange(count, request)) {
+                return PageResult.empty(request, count);
+            }
+            // 分页查询
+            historicTasks.addAll(actHistoryMapper.queryByCandidateGroupByPage(request, request.getStartRow(), request.getPageSize()));
+            // 结果填充
+        } else {
+            // 不分页查询
+            historicTasks.addAll(actHistoryMapper.queryByCandidateGroup(request));
+            count = historicTasks.size();
         }
-        // 分页查询
-        List<HistoricTaskInstance> historicTasks = actHistoryMapper.queryByCandidateGroup(request,
-                request.getStartRow(), request.getPageSize());
-        // 结果填充
+
         return getHistoryPageResult(request, count, historicTasks);
     }
 
@@ -81,9 +98,24 @@ public class ProcHistoryServiceImpl implements ProcHistoryService {
                 , "用户查询条件不能都为空");
         // 按任务结束时间倒序查询
         HistoricTaskInstanceQuery historyQuery = historyService.createHistoricTaskInstanceQuery()
-                .taskCategory(request.getCategory())
                 .orderByHistoricTaskInstanceEndTime()
                 .desc();
+        // 流程类型
+        if (StringUtils.isNotBlank(request.getProcCategory())) {
+            historyQuery.processCategoryIn(Lists.newArrayList(request.getProcCategory()));
+        }
+        // 任务id
+        if (StringUtils.isNotBlank(request.getTaskId())) {
+            historyQuery.taskId(request.getTaskId());
+        }
+        // 任务定义id
+        if (StringUtils.isNotBlank(request.getTaskDefId())) {
+            historyQuery.taskDefinitionKey(request.getTaskDefId());
+        }
+        // 任务类型
+        if (StringUtils.isNotBlank(request.getCategory())) {
+            historyQuery.taskCategory(request.getCategory());
+        }
         // 业务key
         if (request.getBusinessKey() != null) {
             historyQuery.processInstanceBusinessKey(request.getBusinessKey());
@@ -99,6 +131,13 @@ public class ProcHistoryServiceImpl implements ProcHistoryService {
         // 是否查询结束任务
         if (BooleanUtils.isTrue(request.getCompleteTask())) {
             historyQuery.finished();
+        }
+        // 任务创建时间
+        if (request.getTaskCreateTimeBegin() != null) {
+            historyQuery.taskCreatedAfter(request.getTaskCreateTimeBegin());
+        }
+        if (request.getTaskCreateTimeEnd() != null) {
+            historyQuery.taskCreatedBefore(request.getTaskCreateTimeEnd());
         }
         return historyQuery;
     }
@@ -142,6 +181,15 @@ public class ProcHistoryServiceImpl implements ProcHistoryService {
             log.warn("流程实例不存在，任务id:{}", historicTaskInstance.getId());
             return null;
         }
+        // 流程定义
+        List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionId(processList.get(0).getProcessDefinitionId())
+            .list();
+        if (CollectionUtils.isEmpty(processDefinitions)) {
+            log.warn("流程定义不存在，流程定义key:{}", processList.get(0).getProcessDefinitionKey());
+            return null;
+        }
+
         // 审批备注
         List<Comment> comments = taskService.getTaskComments(historicTaskInstance.getId());
         // 查询流程参数
@@ -149,18 +197,92 @@ public class ProcHistoryServiceImpl implements ProcHistoryService {
                 .excludeTaskVariables()
                 .processInstanceId(historicTaskInstance.getProcessInstanceId())
                 .list();
-        // 查询任务审批参数
+        // 查询当前任务审批参数
         List<HistoricVariableInstance> localVariables = historyService.createHistoricVariableInstanceQuery()
                 .taskId(historicTaskInstance.getId())
                 .list();
-        return History.builder()
-                .taskId(historicTaskInstance.getId())
-                .assignee(historicTaskInstance.getAssignee())
+        // 当前任务审批信息
+        AuditDTO auditDTO = TaskUtil.getTaskAuditInfo(localVariables);
+        List<com.cmgun.api.model.Comment> commentList = TaskUtil.getComments(comments);
+        // 被删除流程强制停止的任务
+        if (historicTaskInstance.getEndTime() != null && auditDTO == null) {
+            // 补充停止流程的信息
+            auditDTO = AuditDTO.builder()
                 .auditTime(historicTaskInstance.getEndTime())
-                .auditResult(TaskUtil.getTaskAuditResult(localVariables))
-                .data(TaskUtil.getProcessData(globalVariables))
-                .comments(TaskUtil.getComments(comments))
-                .businessKey(processList.get(0).getBusinessKey())
+                // 固定为拒绝
+                .auditResult("2")
                 .build();
+            com.cmgun.api.model.Comment deleteComment = com.cmgun.api.model.Comment.builder()
+                .userId("0")
+                .comment(historicTaskInstance.getDeleteReason())
+                .build();
+            commentList.add(deleteComment);
+        }
+        return History.builder()
+            .taskId(historicTaskInstance.getId())
+            .taskName(historicTaskInstance.getName())
+            .taskDefKey(historicTaskInstance.getTaskDefinitionKey())
+            .procNameSpace(processDefinitions.get(0).getCategory())
+            .assignee(historicTaskInstance.getAssignee())
+            .auditor(auditDTO != null ? auditDTO.getAuditor() : null)
+            .auditorName(auditDTO != null ? auditDTO.getAuditorName() : null)
+            .auditResult(auditDTO != null ? auditDTO.getAuditResult() : null)
+            .auditTime(historicTaskInstance.getEndTime())
+            .processInstanceId(historicTaskInstance.getProcessInstanceId())
+            .createTime(historicTaskInstance.getCreateTime())
+            .data(TaskUtil.getProcessData(globalVariables))
+            .comments(commentList)
+            .businessKey(processList.get(0).getBusinessKey())
+            .build();
+    }
+
+    @Override
+    public List<History> queryProcessHistory(String processInstanceId, Boolean complete) {
+        HistoricTaskInstanceQuery historyQuery = historyService.createHistoricTaskInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .orderByHistoricTaskInstanceEndTime()
+            .desc();
+        if (BooleanUtils.isTrue(complete)) {
+            historyQuery.finished();
+        }
+        // 查询结果
+        List<HistoricTaskInstance> historicTasks = historyQuery.list();
+        List<History> result = Lists.newArrayList();
+        for (HistoricTaskInstance historicTaskInstance : historicTasks) {
+            History history = getHistory(historicTaskInstance);
+            if (history != null) {
+                result.add(history);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public History queryHistoryDetail(String taskId) {
+        List<HistoricTaskInstance> historicTasks = historyService.createHistoricTaskInstanceQuery()
+            .taskId(taskId)
+            .list();
+        if (CollectionUtils.isEmpty(historicTasks)) {
+            return null;
+        }
+        // 封装结果
+        HistoricTaskInstance taskInstance = historicTasks.get(0);
+        History history = getHistory(taskInstance);
+        if (history != null) {
+            // 获取上一个历史任务的信息
+            HistoricTaskInstance lastTask = actHistoryMapper.queryLastTask(taskInstance.getProcessInstanceId(), taskId);
+            if (lastTask != null) {
+                // 查询当前任务审批参数
+                List<HistoricVariableInstance> localVariables = historyService.createHistoricVariableInstanceQuery().taskId(lastTask.getId()).list();
+                // 上一个任务审批信息
+                AuditDTO auditDTO = TaskUtil.getTaskAuditInfo(localVariables);
+                history.setLastAuditor(auditDTO != null ? auditDTO.getAuditor() : null);
+                history.setLastAuditorName(auditDTO != null ? auditDTO.getAuditorName() : null);
+                history.setLastComment(auditDTO != null ? auditDTO.getComment() : null);
+                history.setLastAuditTime(auditDTO != null ? auditDTO.getAuditTime() : null);
+                history.setLastAuditResult(auditDTO != null ? auditDTO.getAuditResult() : null);
+            }
+        }
+        return history;
     }
 }

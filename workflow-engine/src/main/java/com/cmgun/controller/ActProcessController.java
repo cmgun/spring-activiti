@@ -1,6 +1,7 @@
 package com.cmgun.controller;
 
 import com.cmgun.api.common.Response;
+import com.cmgun.api.model.Process;
 import com.cmgun.api.model.ProcessActiveTaskRequest;
 import com.cmgun.api.model.ProcessStartRequest;
 import com.cmgun.api.model.Task;
@@ -9,7 +10,6 @@ import com.cmgun.config.annotation.DuplicateValidation;
 import com.cmgun.config.annotation.RequestPersistence;
 import com.cmgun.entity.dto.DeployDTO;
 import com.cmgun.entity.enums.BusiTypeEnum;
-import com.cmgun.api.model.Process;
 import com.cmgun.service.ProcTaskService;
 import com.cmgun.service.ProcessService;
 import io.swagger.annotations.Api;
@@ -75,5 +75,11 @@ public class ActProcessController implements ActProcessService {
     public Response<List<Task>> processActiveTasks(ProcessActiveTaskRequest request) {
         List<Task> tasks = procTaskService.queryActiveTaskByProcess(request);
         return Response.success("查询成功", tasks);
+    }
+
+    @Override
+    public Response<Void> endProcess(String processInstanceId, String reason) {
+        processService.endProcess(processInstanceId, reason);
+        return Response.success("流程终止成功");
     }
 }

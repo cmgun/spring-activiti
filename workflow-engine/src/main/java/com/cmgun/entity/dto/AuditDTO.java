@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author chenqilin
@@ -22,4 +23,6 @@ public class AuditDTO implements Serializable {
     private Object auditResult;
 
     private String comment;
+
+    private Date auditTime;
 }

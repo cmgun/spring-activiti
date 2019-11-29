@@ -27,7 +27,7 @@ import java.util.List;
  * @author chenqilin
  * @date 2019/7/16
  */
-@FeignClient(value = "workflow-engine", path = "process")
+@FeignClient(value = "fuhsi-workflow-engine", path = "/process")
 public interface ActProcessService {
 
     @ApiOperation("流程发布")
@@ -38,7 +38,7 @@ public interface ActProcessService {
             @ApiImplicitParam(name = "category", value = "部署类别", paramType = "query"),
             @ApiImplicitParam(name = "file", value = "流程文件", paramType = "query", dataTypeClass = MultipartFile.class)
     })
-    @PostMapping(value = "deploy", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/deploy", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Response<Process> deploy(@RequestParam(value = "processName") String processName
             , @RequestParam(value = "key") String key
             , @RequestParam(value = "source") String source
@@ -46,10 +46,15 @@ public interface ActProcessService {
             , @RequestPart("file") MultipartFile file) throws IOException;
 
     @ApiOperation("流程开启")
-    @PostMapping("start")
+    @PostMapping("/start")
     Response<Process> start(@RequestBody @Validated @ApiParam(value = "流程开启参数", required = true) ProcessStartRequest request);
 
     @ApiOperation("某个流程当前激活的任务")
-    @PostMapping("queryActiveTasks")
+    @PostMapping("/query-active-tasks")
     Response<List<Task>> processActiveTasks(@RequestBody @Validated @ApiParam(value = "查询条件", required = true) ProcessActiveTaskRequest request);
+
+    @ApiOperation("流程终止")
+    @PostMapping("/end")
+    Response<Void> endProcess(@RequestParam("processInstanceId") String processInstanceId, @RequestParam("reason") String reason);
+
 }

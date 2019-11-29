@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -21,11 +20,14 @@ import javax.validation.constraints.NotNull;
 @ApiModel("查询流程激活中任务")
 public class ProcessActiveTaskRequest {
 
+    @NotNull(message = "流程定义key不能为空")
+    @ApiModelProperty("流程定义key，process标签的id")
+    private String processDefinitionKey;
+
     @NotNull(message = "流程的业务id不能为空")
     @ApiModelProperty("流程的业务id，业务系统保证唯一性")
     private String businessKey;
 
-    @NotBlank(message = "流程类型不能为空")
     @ApiModelProperty("流程类型，process标签的namespace")
     private String category;
 }

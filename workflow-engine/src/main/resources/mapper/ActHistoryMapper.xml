@@ -26,7 +26,14 @@
         <result column="TENANT_ID_" property="tenantId" />
     </resultMap>
 
+
     <select id="queryByCandidateGroup" resultMap="HistoricTaskInstance">
+        SELECT DISTINCT
+        RES.*
+        <include refid="queryByCandidateGroupSql"/>
+    </select>
+
+    <select id="queryByCandidateGroupByPage" resultMap="HistoricTaskInstance">
         SELECT DISTINCT
         RES.*
         <include refid="queryByCandidateGroupSql"/>
@@ -41,18 +48,53 @@
     <sql id="queryByCandidateGroupSql">
         FROM
         ACT_HI_TASKINST RES
+        <if test="param.procCategory != null and param.procCategory != ''">
+            INNER JOIN ACT_RE_PROCDEF PROCDEF ON PROCDEF.ID_ = RES.PROC_DEF_ID_
+        </if>
         INNER JOIN ACT_HI_IDENTITYLINK HI ON HI.TASK_ID_ = RES.ID_
         WHERE
+        HI.TYPE_ = 'candidate'
+        AND HI.GROUP_ID_ IN
+        <foreach collection="param.candidateGroup" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
         <if test="param.completeTask == true">
-            RES.END_TIME_ IS NOT NULL
+            AND RES.END_TIME_ IS NOT NULL
         </if>
         <if test="param.completeTask == false">
-            RES.END_TIME_ IS NULL
+            AND RES.END_TIME_ IS NULL
         </if>
-        AND RES.CATEGORY_ = #{param.category}
-        AND HI.TYPE_ = 'candidate'
-        AND (HI.GROUP_ID_ IN(#{param.candidateGroup}))
+        <if test="param.taskId != null and param.taskId != ''">
+            AND RES.ID_ = #{param.taskId}
+        </if>
+        <if test="param.procCategory != null and param.procCategory != ''">
+            AND PROCDEF.CATEGORY_ = #{param.procCategory}
+        </if>
+        <if test="param.taskDefId != null and param.taskDefId != ''">
+            AND RES.TASK_DEF_KEY_ = #{param.taskDefId}
+        </if>
+        <if test="param.category != null and param.category != ''">
+            AND RES.CATEGORY_ = #{param.category}
+        </if>
+        <if test="param.taskCreateTimeBegin != null">
+            AND RES.START_TIME_ <![CDATA[ >= ]]> #{param.taskCreateTimeBegin}
+        </if>
+        <if test="param.taskCreateTimeEnd != null">
+            AND RES.START_TIME_ <![CDATA[ <= ]]> #{param.taskCreateTimeEnd}
+        </if>
         ORDER BY
         RES.END_TIME_ DESC
     </sql>
+
+    <select id="queryLastTask" resultMap="HistoricTaskInstance">
+        SELECT DISTINCT
+        RES.*
+        FROM
+        ACT_HI_TASKINST RES
+        WHERE
+        RES.PROC_INST_ID_ = #{processInstanceId}
+        AND RES.ID_ <![CDATA[ < ]]> #{currentTaskId}
+        ORDER BY
+        RES.ID_ DESC LIMIT 1
+    </select>
 </mapper>

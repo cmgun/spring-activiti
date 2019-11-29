@@ -3,7 +3,7 @@
     <!--定义一个将日志输出到控制台的appender，名称为STDOUT -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[Eran] [%contextName]%date [%thread %line] %level >> %msg >> %logger{10}%n</pattern>
+            <pattern>[LOG] [%contextName]%date [%thread %line] %level >> %msg >> %logger{10}%n</pattern>
         </encoder>
     </appender>
     <!--定义一个将日志输出到文件的appender，名称为FILE_LOG -->
@@ -11,7 +11,7 @@
         <file>logs/test.log</file>
         <append>true</append>
         <encoder>
-            <pattern>[Eran]%date [%thread %line] %level >> %msg >> %logger{10}%n</pattern>
+            <pattern>[LOG]%date [%thread %line] %level >> %msg >> %logger{10}%n</pattern>
         </encoder>
     </appender>
     <!-- 按时间滚动产生日志文件 -->

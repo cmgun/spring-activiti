@@ -4,6 +4,7 @@ import com.cmgun.api.common.PageResult;
 import com.cmgun.api.common.Response;
 import com.cmgun.api.model.Task;
 import com.cmgun.api.model.TaskAuditRequest;
+import com.cmgun.api.model.TaskIdentity;
 import com.cmgun.api.model.ToDoTaskRequest;
 import com.cmgun.api.service.ActTaskService;
 import com.cmgun.config.annotation.DuplicateValidation;
@@ -15,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 任务管理
@@ -43,5 +46,17 @@ public class ActTaskController implements ActTaskService {
     public Response audit(TaskAuditRequest request) {
         taskService.audit(request);
         return Response.success("任务审批成功");
+    }
+
+    @Override
+    public Response<List<TaskIdentity>> queryIdentityLink(List<String> taskIds) {
+        List<TaskIdentity> taskIdentities = taskService.queryIdentityLink(taskIds);
+        return Response.success("查询成功", taskIdentities);
+    }
+
+    @Override
+    public Response<Task> queryDetail(String taskId) {
+        Task taskInfo = taskService.queryDetail(taskId);
+        return Response.success("查询成功", taskInfo);
     }
 }

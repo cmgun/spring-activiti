@@ -8,8 +8,6 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 任务信息
@@ -27,11 +25,23 @@ public class Task implements Serializable {
     @ApiModelProperty("任务id")
     private String taskId;
 
+    @ApiModelProperty("任务定义id")
+    private String taskDefKey;
+
+    @ApiModelProperty("任务名称")
+    private String taskName;
+
+    @ApiModelProperty("流程命名空间，流程类别")
+    private String procNameSpace;
+
     @ApiModelProperty("流程key")
     private String processDefinitionKey;
 
     @ApiModelProperty("流程定义id")
     private String processDefinitionId;
+
+    @ApiModelProperty("流程实例id")
+    private String processInstanceId;
 
     @ApiModelProperty("业务id")
     private String businessKey;
@@ -61,4 +71,7 @@ public class Task implements Serializable {
 
     @ApiModelProperty("上一个任务审批意见")
     private String comment;
+
+    @ApiModelProperty("上一个任务审批时间")
+    private Date lastAuditTime;
 }

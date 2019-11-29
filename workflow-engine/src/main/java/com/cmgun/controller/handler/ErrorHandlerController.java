@@ -3,6 +3,7 @@ package com.cmgun.controller.handler;
 import com.cmgun.api.common.Response;
 import com.cmgun.config.aspect.exception.DuplicateRequestException;
 import com.cmgun.exception.ActBusinessException;
+import com.cmgun.exception.ActBusinessRepeatException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.validation.FieldError;
@@ -32,7 +33,7 @@ public class ErrorHandlerController {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseBody
-    public Response IllegalArgumentExceptionHandler(HttpServletRequest request, IllegalArgumentException exception) {
+    public Response illegalArgumentExceptionHandler(HttpServletRequest request, IllegalArgumentException exception) {
         log.warn("IllegalArgumentExceptionHandler，url:{}", request.getRequestURI(), exception);
         return Response.builder()
                 .code(Response.BAD_REQUEST)
@@ -50,7 +51,7 @@ public class ErrorHandlerController {
      */
     @ExceptionHandler({DuplicateRequestException.class, DuplicateKeyException.class})
     @ResponseBody
-    public Response DuplicateRequestExceptionHandler(HttpServletRequest request, Exception exception) {
+    public Response duplicateRequestExceptionHandler(HttpServletRequest request, Exception exception) {
         log.warn("DuplicateRequestExceptionHandler，url:{}", request.getRequestURI(), exception);
         return Response.builder()
                 .code(Response.REPEAT_REQUEST)
@@ -67,7 +68,7 @@ public class ErrorHandlerController {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
-    public Response MethodArgumentNotValidExceptionHandler(HttpServletRequest request, MethodArgumentNotValidException exception) {
+    public Response methodArgumentNotValidExceptionHandler(HttpServletRequest request, MethodArgumentNotValidException exception) {
         StringBuilder errMsg = new StringBuilder();
         for (FieldError fieldError : exception.getBindingResult().getFieldErrors()) {
             errMsg.append(fieldError.getDefaultMessage()).append(";");
@@ -82,6 +83,25 @@ public class ErrorHandlerController {
     }
 
     /**
+     * 业务重复异常
+     *
+     * @param request   请求
+     * @param exception 异常
+     * @return 响应
+     */
+    @ExceptionHandler(ActBusinessRepeatException.class)
+    @ResponseBody
+    public Response actBusinessRepeatExceptionHandler(HttpServletRequest request, MethodArgumentNotValidException exception) {
+        StringBuilder errMsg = new StringBuilder();
+        for (FieldError fieldError : exception.getBindingResult().getFieldErrors()) {
+            errMsg.append(fieldError.getDefaultMessage()).append(";");
+        }
+        log.warn("actBusinessRepeatExceptionHandler，url:{}，errMsg:{}", request.getRequestURI(), errMsg.toString(), exception);
+        return Response.builder().code(Response.REPEAT_BUSINESS).message(errMsg.toString()).build();
+
+    }
+
+    /**
      * 业务异常
      *
      * @param request 请求
@@ -90,7 +110,7 @@ public class ErrorHandlerController {
      */
     @ExceptionHandler(ActBusinessException.class)
     @ResponseBody
-    public Response ActBusinessExceptionHandler(HttpServletRequest request, ActBusinessException exception) {
+    public Response actBusinessExceptionHandler(HttpServletRequest request, ActBusinessException exception) {
         log.warn("ActBusinessExceptionHandler，url:{}", request.getRequestURI(), exception);
         return Response.builder()
                 .code(Response.BUSINESS_ERROR)
@@ -107,7 +127,7 @@ public class ErrorHandlerController {
      */
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public Response ExceptionHandler(HttpServletRequest request, Exception exception) {
+    public Response exceptionHandler(HttpServletRequest request, Exception exception) {
         log.warn("ExceptionHandler，url:{}", request.getRequestURI(), exception);
         return Response.builder()
                 .code(Response.ERROR)

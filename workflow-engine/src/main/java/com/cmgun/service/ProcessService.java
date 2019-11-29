@@ -26,4 +26,11 @@ public interface ProcessService {
      * @return 流程实例
      */
     Process startProcess(ProcessStartRequest request);
+
+    /**
+     * 终止流程
+     * @param processInstanceId
+     * @param reason
+     */
+    void endProcess(String processInstanceId, String reason);
 }

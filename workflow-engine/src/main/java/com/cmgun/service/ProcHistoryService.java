@@ -4,6 +4,8 @@ import com.cmgun.api.common.PageResult;
 import com.cmgun.api.model.History;
 import com.cmgun.api.model.HistoryQueryRequest;
 
+import java.util.List;
+
 /**
  * 流程历史管理
  *
@@ -30,4 +32,21 @@ public interface ProcHistoryService {
      * @return 流程历史任务列表
      */
     PageResult<History> queryHistoryByCandidateGroup(HistoryQueryRequest request);
+
+    /**
+     * 查询流程实例的历史任务
+     *
+     * @param processInstanceId 流程实例
+     * @param complete 是否查询结束的任务
+     * @return 历史任务
+     */
+    List<History> queryProcessHistory(String processInstanceId, Boolean complete);
+
+    /**
+     * 查询指定任务历史详情
+     *
+     * @param taskId 任务id
+     * @return 历史任务
+     */
+    History queryHistoryDetail(String taskId);
 }

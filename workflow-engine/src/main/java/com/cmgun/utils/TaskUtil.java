@@ -8,6 +8,7 @@ import com.cmgun.entity.dto.AuditDTO;
 import com.google.common.collect.Lists;
 import org.activiti.engine.history.HistoricVariableInstance;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +73,7 @@ public class TaskUtil {
                 .auditor(request.getAuditor())
                 .auditorName(request.getAuditorName())
                 .auditResult(request.getAuditResult())
+                .auditTime(new Date())
                 .comment(request.getComment())
                 .build();
         Map<String, Object> localContext = new HashMap<>();
@@ -87,11 +89,10 @@ public class TaskUtil {
      * @param localVariables 历史变量
      * @return 审批处理结果
      */
-    public static Object getTaskAuditResult(List<HistoricVariableInstance> localVariables) {
+    public static AuditDTO getTaskAuditInfo(List<HistoricVariableInstance> localVariables) {
         for (HistoricVariableInstance variable : localVariables) {
             if (AUDIT_INFO.equals(variable.getVariableName())) {
-                AuditDTO auditDTO = (AuditDTO) variable.getValue();
-                return auditDTO.getAuditResult();
+                return  (AuditDTO) variable.getValue();
             }
         }
         return null;
@@ -157,6 +158,7 @@ public class TaskUtil {
         builder.auditResult(auditDTO.getAuditResult())
                 .auditor(auditDTO.getAuditor())
                 .auditorName(auditDTO.getAuditorName())
-                .comment(auditDTO.getComment());
+                .comment(auditDTO.getComment())
+                .lastAuditTime(auditDTO.getAuditTime());
     }
 }

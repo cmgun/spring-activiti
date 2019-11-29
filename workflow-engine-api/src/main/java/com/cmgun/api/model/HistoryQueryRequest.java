@@ -7,8 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 历史任务查询
@@ -25,7 +25,7 @@ public class HistoryQueryRequest extends PageQuery {
     private static final long serialVersionUID = 2881703300036639827L;
 
     @ApiModelProperty(value = "任务候选组", notes = "该字段非空时，忽略其他用户查询条件")
-    private String candidateGroup;
+    private List<String> candidateGroup;
 
     @ApiModelProperty(value = "任务候选人")
     private String candidateUser;
@@ -33,14 +33,27 @@ public class HistoryQueryRequest extends PageQuery {
     @ApiModelProperty(value = "任务指派人")
     private String assignee;
 
-    @NotBlank(message = "流程类型不能为空")
-    @ApiModelProperty("流程类型，定义在流程图任务节点中的category属性")
+    @ApiModelProperty("流程类型，定义在流程图流程中的namespace属性")
+    private String procCategory;
+
+    @ApiModelProperty("任务id")
+    private String taskId;
+
+    @ApiModelProperty("任务定义id，定义在流程图任务节点中的id属性")
+    private String taskDefId;
+
+    @ApiModelProperty("任务类型，定义在流程图任务节点中的category属性")
     private String category;
 
     @ApiModelProperty("流程的业务id，命名规则：业务模块标志:业务id")
     private String businessKey;
 
-    @NotNull(message = "任务是否结束标识不能为空")
     @ApiModelProperty(value = "任务是否结束标识", notes = "true:已结束，false:未结束")
     private Boolean completeTask;
+
+    @ApiModelProperty("任务开始时间查询最小值")
+    private Date taskCreateTimeBegin;
+
+    @ApiModelProperty("任务开始时间查询最大值")
+    private Date taskCreateTimeEnd;
 }

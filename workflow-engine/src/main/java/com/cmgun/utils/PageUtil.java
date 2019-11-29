@@ -2,9 +2,7 @@ package com.cmgun.utils;
 
 
 import com.cmgun.api.common.PageQuery;
-import com.cmgun.api.common.PageResult;
 import org.activiti.engine.query.Query;
-import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.List;
