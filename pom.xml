@@ -47,7 +47,7 @@
         <fastjson.version>1.2.47</fastjson.version>
         <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
         <swagger.version>2.9.2</swagger.version>
-        <mysql-connector.version>5.1.48</mysql-connector.version>
+        <mysql-connector.version>8.0.28</mysql-connector.version>
         <!--<atomikos-starter.version>2.1.6.RELEASE</atomikos-starter.version>-->
         <!--<atomikos.version>5.0.0</atomikos.version>-->
     </properties>
